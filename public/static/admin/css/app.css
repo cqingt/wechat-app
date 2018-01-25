@@ -184,7 +184,7 @@ nav.breadcrumb {
   z-index: 9;
 }
 nav.breadcrumb + .page-container {
-  padding-top: 60px;
+  padding-top: 30px;
 }
 .tp-page-aside {
   left: 20px;
