@@ -5,7 +5,7 @@ namespace app\admin\controller;
 
 use app\admin\Controller;
 
-class ProductCategory extends Controller
+class Category extends Controller
 {
     use \app\admin\traits\controller\Controller;
     // 方法黑名单

@@ -11,5 +11,4 @@ class Banner extends Controller
     // 方法黑名单
     protected static $blacklist = [];
 
-    
 }

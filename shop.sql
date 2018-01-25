@@ -8,8 +8,6 @@ create table banners(
     update_time int not null default '0' comment '修改时间'
 )engine=innodb default charset='utf8' comment='轮播图';
 
-
-
 create table category(
     id int not null primary key auto_increment,
     image varchar(512) not null default '' comment '图片地址',
@@ -31,6 +29,7 @@ create table product(
     origin_price decimal(10,2) not null default '0.00' comment '产品原件格',
     attr varchar(2048) not null default '' comment '产品属性',
     content text not null comment '产品内容',
+    online enum('Y','N') not null default 'Y' comment '是否上架，Y是',
     enabled enum('Y','N') not null default 'Y' comment '是否可用，默认是',
     create_time int not null default '0' comment '创建时间',
     update_time int not null default '0' comment '修改时间'

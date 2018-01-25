@@ -3,10 +3,10 @@ namespace app\common\model;
 
 use think\Model;
 
-class ProductCategory extends Model
+class Category extends Model
 {
     // 指定表名,不含前缀
-    protected $name = 'product_category';
+    protected $name = 'category';
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
 

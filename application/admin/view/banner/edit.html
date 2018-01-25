@@ -4,24 +4,30 @@
     <form class="form form-horizontal" id="form" method="post" action="{:\\think\\Request::instance()->baseUrl()}">
         <input type="hidden" name="id" value="{$vo.id ?? ''}">
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">标题：</label>
+            <label class="form-label col-xs-3 col-sm-3">图片说明：</label>
             <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="标题" name="title" value="{$vo.title ?? ''}" >
+                <input type="text" class="input-text" placeholder="图片说明" name="title" value="{$vo.title ?? ''}" >
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>轮播图(1920 * 580)：</label>
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>轮播图(640 * 400)：</label>
             <div class="formControls col-xs-6 col-sm-6">
                 <input type="text" class="input-text" name="image" id="image" placeholder="请点击后面的上传按钮" value="{$vo.image ?? ''}" datatype="*" nullmsg="请填写图片url" style="width: 70%">
                 <button type="button" class="btn btn-primary radius" onclick="layer_open('文件上传','{:\\think\\Url::build(\'Upload/index\', [\'id\' => \'image\'])}')">上传</button>
                 {$vo.image ? prevImage($vo.image) : ''}
-                <!--<input type="text" class="input-text" placeholder="轮播图" name="image" value="{$vo.image ?? ''}"  datatype="*" nullmsg="轮播图不能为空">-->
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">排序：</label>
+            <label class="form-label col-xs-3 col-sm-3">关联产品ID：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="number" class="input-text" placeholder="请填写ID" name="product_id" value="{$vo.product_id ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">排序(9->0)：</label>
             <div class="formControls col-xs-6 col-sm-6">
                 <input type="number" class="input-text" placeholder="排序" name="position" value="{$vo.position ?? '1'}" >
             </div>
