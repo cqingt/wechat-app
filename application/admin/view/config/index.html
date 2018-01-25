@@ -1,0 +1,66 @@
+{extend name="template/base" /}
+{block name="content"}
+<div class="page-container">
+    
+    <div class="cl pd-5 bg-1 bk-gray">
+        <!--<span class="l">-->
+            <!--{tp:menu menu="add,forbid" /}-->
+        <!--</span>-->
+        <span class="r pt-5 pr-5">
+            共有数据 ：<strong>{$count ?? '0'}</strong> 条
+        </span>
+    </div>
+    <div style="" class="table-responsive">
+    <table class="table table-border table-bordered table-hover table-bg mt-20 table-responsive">
+        <thead>
+        <tr class="text-c">
+            <th width="25"><input type="checkbox"></th>
+            <th width="">网站标题</th>
+            <th width="">关键字</th>
+            <th width="">网站描述</th>
+            <th width="">网站Logo</th>
+            <th width="">网站标语</th>
+            <th width="">顶部banner</th>
+            <th width="">手机图片</th>
+            <th width="">底部logo</th>
+            <th width="">底部手机图片</th>
+            <th width="">二维码</th>
+            <th width="">公司名称</th>
+            <th width="">icp备案号</th>
+            <th width="">手机号</th>
+            <th width="">邮政编码</th>
+            <th width="">联系地址</th>
+            <th width="70">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr class="text-c">
+            <td><input type="checkbox" name="id[]" value="{$vo.id}"></td>
+            <td>{$vo.title}</td>
+            <td>{$vo.keyword}</td>
+            <td>{$vo.description|mb_substr=###,0,30,'utf-8'}</td>
+            <td>{$vo.logo|prev_image}</td>
+            <td>{$vo.slogan|prev_image}</td>
+            <td>{$vo.top_image|prev_image}</td>
+            <td>{$vo.mobile_image|prev_image}</td>
+            <td>{$vo.footer_logo|prev_image}</td>
+            <td>{$vo.footer_mobile|prev_image}</td>
+            <td>{$vo.qrcode|prev_image}</td>
+            <td>{$vo.company}</td>
+            <td>{$vo.icp}</td>
+            <td>{$vo.mobile}</td>
+            <td>{$vo.postal}</td>
+            <td>{$vo.address}</td>
+            <td class="f-14">
+                {tp:menu menu='myedit' /}
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    </div>
+    <div class="page-bootstrap">{$page ?? ''}</div>
+</div>
+{/block}
+

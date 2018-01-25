@@ -1,0 +1,112 @@
+{extend name="template/base" /}
+{block name="content"}
+<div class="page-container">
+    <form class="form form-horizontal" id="form" method="post" action="{:\\think\\Request::instance()->baseUrl()}">
+        <input type="hidden" name="id" value="{$vo.id ?? ''}">
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>公司名称：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="公司名称" name="company" value="{$vo.company ?? ''}"  datatype="*" nullmsg="请填写公司名称">
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>图片展示(400 * 315)：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" name="image" id="image" placeholder="请点击后面的上传按钮" value="{$vo.image ?? ''}" datatype="*" nullmsg="请填写图片url" style="width: 70%">
+                <button type="button" class="btn btn-primary radius" onclick="layer_open('文件上传','{:\\think\\Url::build(\'Upload/index\', [\'id\' => \'image\'])}')">上传</button>
+                {$vo.image ? prevImage($vo.image) : ''}
+                <!--<input type="text" class="input-text" placeholder="显示图片" name="image" value="{$vo.image ?? ''}"  datatype="*" nullmsg="请填写显示图片">-->
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>加盟热线：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="加盟热线" name="telephone" value="{$vo.telephone ?? ''}"  datatype="*" nullmsg="请填写加盟热线">
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">传真：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="text" class="input-text" placeholder="传真" name="fax" value="{$vo.fax ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">网址：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="text" class="input-text" placeholder="网址" name="site" value="{$vo.site ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">邮箱：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="text" class="input-text" placeholder="邮箱" name="email" value="{$vo.email ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">地址：</label>
+            <div class="formControls col-xs-6 col-sm-5">
+                <input type="text" class="input-text" placeholder="地址" name="address" value="{$vo.address ?? ''}" >
+                <a href="http://www.gpsspg.com/maps.htm" target="_blank" style="color: red">查看经纬度</a>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">乘车路线：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="乘车路线" name="route" value="{$vo.route ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">经度：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="text" class="input-text" placeholder="经度 36.xxx" name="lat" value="{$vo.lat ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">纬度：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="text" class="input-text" placeholder="纬度 121.xxx" name="lng" value="{$vo.lng ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <button type="submit" class="btn btn-primary radius">&nbsp;&nbsp;修改&nbsp;&nbsp;</button>
+                <!--<button type="button" class="btn btn-default radius ml-20" onClick="layer_close();">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>-->
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+{block name="script"}
+<script type="text/javascript" src="__LIB__/Validform/5.3.2/Validform.min.js"></script>
+<script>
+    $(function () {
+
+
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+
+        $("#form").Validform({
+            tiptype: 2,
+            ajaxPost: true,
+            showAllError: true,
+            callback: function (ret){
+                window.location.reload();
+            }
+        });
+    })
+</script>
+{/block}
