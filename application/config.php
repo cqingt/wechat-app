@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+use think\Env;
 
 return [
     // +----------------------------------------------------------------------
@@ -19,9 +20,9 @@ return [
     // 应用命名空间
     'app_namespace'          => 'app',
     // 应用调试模式
-    'app_debug'              => false,
+    'app_debug'              => Env::get('app_debug'),
     // 应用Trace
-    'app_trace'              => false,
+    'app_trace'              => Env::get('app_trace'),
     // 应用模式状态
     'app_status'             => '',
     // 是否支持多模块
@@ -148,7 +149,7 @@ return [
     // 显示错误信息
     'show_error_msg'        => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
-    'exception_handle'      => '', // \\app\\common\\exception\\MyException
+    'exception_handle'      => Env::get('exception_handle'), // \\app\\common\\exception\\MyException
 
     // +----------------------------------------------------------------------
     // | 日志设置
