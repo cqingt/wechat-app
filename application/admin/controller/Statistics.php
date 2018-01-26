@@ -47,12 +47,12 @@ class Statistics extends Controller
 
     public function getDateBetween($year, $month)
     {
-        $date = $year . '-' . $month . '-01';
+        $date = implode('-', [$year, $month, '01']);
         $total = date('d', strtotime($date . ' +1 month -1 day'));
         $dates = [];
 
         for ($i = 1; $i <= $total; $i++) {
-            $dates[] =  $year . '-' . $month . '-' . ($i < 10 ? '0' . $i : $i);
+            $dates[] =  implode('-', [$year, $month, $i]);
         }
 
         return $dates;
