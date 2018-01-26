@@ -1,0 +1,62 @@
+<style>
+    .form-group{margin-bottom:15px;}
+    .col-lg-3 {
+        width: 22%;
+    }
+</style>
+<form class="mb-20 " style="height:80px;" method="get" action="{:\\think\\Url::build($Request.action)}">
+    <div class="row">
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <label for="game_id" class="control-label col-xs-4" style="vertical-align: middle;padding-top: 7px;text-align: right;">分组名称</label>
+            <div class="col-xs-6" style="padding-left:0">
+                <input type="text" id="game_id" class="input-text"  placeholder="分组名称" name="name"  value="{$Request.param.name}">
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <label for="channel_id" class="control-label col-xs-4" style="vertical-align: middle;padding-top: 7px;text-align: right;">分组名称</label>
+            <div class="col-xs-6" style="padding-left:0">
+                <input type="text" id="channel_id" class="input-text" placeholder="分组名称" name="name"  value="{$Request.param.name}">
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3" >
+            <label for="group_id" class="control-label col-xs-4" style="vertical-align: middle;padding-top: 7px;text-align: right;">选择状态</label>
+            <div class="col-xs-6" style="padding-left:0">
+                <div class="select-box">
+                    <select name="group_id" class="select" id="group_id">
+                        <option value="">选择状态</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3" style="width: 450px;">
+            <label for="create_time" class="control-label col-xs-4" style="vertical-align: middle;padding-top: 7px;text-align: right;">选择时间</label>
+            <div class="col-xs-8" style="width:270px;padding-left:0">
+                <input type="text" id="create_time" class="input-text Wdate" style="width:110px" placeholder="开始时间" name="start_time" value="{$Request.param.start_time}" {literal} onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" {/literal} >
+                - <input type="text" id="create_time" class="input-text Wdate" style="width:110px" placeholder="结束时间" name="end_time" value="{$Request.param.end_time}" {literal} onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" {/literal} >
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3" >
+            <label for="group_id" class="control-label col-xs-4" style="vertical-align: middle;padding-top: 7px;text-align: right;">选择状态</label>
+            <div class="col-xs-6" style="padding-left:0">
+                <div class="select-box">
+                    <select name="group_id" class="select" id="group_id">
+                        <option value="">选择状态</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <div class="col-sm-8 col-xs-offset-4" style="padding-left:0">
+                <button type="submit" class="btn btn-success">提交</button>
+                <button type="reset" class="btn btn-default">重置</button>
+            </div>
+        </div>
+        <!--<button type="submit" class="btn btn-success"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>-->
+    </div>
+
+</form>
