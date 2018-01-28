@@ -10,9 +10,9 @@
 
 return [
     // 网站信息
-    'name'        => 'Wechat商城',
+    'name'        => 'Wechat小程序商城',
     'company'     => '星辉网络有限公司',
-    'title'       => 'WechatAPP - 一个基于ThinkPHP5的商城管理后台，支持代码自动生成，RBAC权限管理，无限级节点权限管理，一个智能化的管理后台',
+    'title'       => 'Wechat小程序商城- 一个基于ThinkPHP5的商城管理后台，支持代码自动生成，RBAC权限管理，无限级节点权限管理，一个智能化的管理后台',
     'version'     => '',
     'keywords'    => '后台管理系统',
     'description' => '一个基于ThinkPHP5的商城管理后台，支持代码自动生成，RBAC权限管理，无限级节点权限管理，一个智能化的管理后台。',

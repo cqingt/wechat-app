@@ -1,0 +1,67 @@
+<style>
+    .form-group{margin-bottom:15px;}
+    .col-lg-3 {
+        width: 22%;
+    }
+    .input-text{padding-right:0}
+</style>
+<form class="mb-20 " id="order_search" style="height:84px;line-height: 34px;" method="get" action="{:\\think\\Url::build($Request.action)}">
+    <div class="row">
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <label for="order_sn" class="control-label col-xs-5" style="vertical-align: middle;text-align: right;">订单号</label>
+            <div class="col-xs-7" style="padding-left:0">
+                <input type="text" id="order_sn" class="input-text" placeholder="订单号" name="order_sn" value="{$Request.param.order_sn}" >
+            </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <label for="telephone" class="control-label col-xs-5" style="vertical-align: middle;text-align: right;">手机号</label>
+            <div class="col-xs-7" style="padding-left:0">
+                <input type="text" id="telephone" class="input-text" placeholder="买家手机号" name="telephone" value="{$Request.param.telephone}" >
+            </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <label for="express_no" class="control-label col-xs-5" style="vertical-align: middle;text-align: right;">快递单号</label>
+            <div class="col-xs-7" style="padding-left:0">
+                <input type="text" id="express_no" class="input-text" placeholder="快递单号" name="express_no" value="{$Request.param.express_no}" >
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3" >
+            <label for="group_id" class="control-label col-xs-5" style="vertical-align: middle;text-align: right;">订单状态</label>
+            <div class="col-xs-7" style="padding-left:0">
+                <div class="select-box">
+                    <select name="status" class="select" id="group_id">
+                        <option value="">选择状态</option>
+                        {foreach $status as $key => $name}
+                        <option value="{$key}">{$name}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3" style="width: 35%;">
+            <label for="create_time" class="control-label col-xs-3" style="vertical-align: middle;text-align: right;">选择时间</label>
+            <div class="col-xs-8" style="width:270px;padding-left:0">
+                <input type="text" id="create_time" class="input-text Wdate" style="width:110px" placeholder="开始时间" name="start_time" value="{$Request.param.create_time}" {literal} onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" {/literal} >
+                - <input type="text" id="create_time" class="input-text Wdate" style="width:110px" placeholder="结束时间" name="end_time" value="{$Request.param.create_time}" {literal} onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" {/literal} >
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <div class="col-sm-8 col-xs-offset-4" style="padding-left:0">
+                <button type="submit" class="btn btn-success">提交</button>
+                <input type="reset" class="btn btn-default reset" value="重置">
+            </div>
+        </div>
+    </div>
+
+</form>
+<script type="text/javascript" src="__LIB__/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(function () {
+        $('.reset').on('click', function () {
+            window.location.href = "{:\\think\\Url::build($Request.action)}"
+        })
+    })
+</script>

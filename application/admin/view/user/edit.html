@@ -4,57 +4,71 @@
     <form class="form form-horizontal" id="form" method="post" action="{:\\think\\Request::instance()->baseUrl()}">
         <input type="hidden" name="id" value="{$vo.id ?? ''}">
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>产品名称：</label>
+            <label class="form-label col-xs-3 col-sm-3">昵称：</label>
             <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="产品名称" name="name" value="{$vo.name ?? ''}"  datatype="*" nullmsg="请填写产品名称">
+                {$vo.username ?:'--'}
+                <input type="hidden" name="username" value="{$vo.username ?? ''}">
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">图片：</label>
+            <label class="form-label col-xs-3 col-sm-3">头像：</label>
             <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="图片" name="image" value="{$vo.image ?? ''}" >
+                <input type="hidden" name="avatar" value="{$vo.avatar ?? ''}">
+                {$vo.avatar ? prevImage($vo.avatar) : ''}
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">所属分类：</label>
+            <label class="form-label col-xs-3 col-sm-3">标识：</label>
             <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="所属分类" name="category_id" value="{$vo.category_id ?? ''}" >
+                <input type="hidden" name="openid" value="{$vo.openid ?? ''}">
+                {$vo.openid ?:'--'}
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">价格：</label>
-            <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="价格" name="price" value="{$vo.price ?? ''}" >
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>手机号：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="hidden" name="telephone" value="{$vo.telephone ?? ''}">
+                {$vo.telephone ?:'--'}
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">库存：</label>
-            <div class="formControls col-xs-6 col-sm-6">
-                <input type="number" class="input-text" placeholder="库存" name="stock" value="{$vo.stock ?? ''}" >
+            <label class="form-label col-xs-3 col-sm-3">所在省：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="hidden" name="province" value="{$vo.province ?? ''}">
+                {$vo.province ?:'--'}
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">产品属性：</label>
-            <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="产品属性" name="attr" value="{$vo.attr ?? ''}" >
+            <label class="form-label col-xs-3 col-sm-3">所在市：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="hidden" name="city" value="{$vo.city ?? ''}">
+                {$vo.city ?:'--'}
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">状态：</label>
+            <label class="form-label col-xs-3 col-sm-3">性别：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="hidden" name="gender" value="{$vo.gender ?? ''}">
+                {$vo.gender ?:'--'}
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">是否禁用：</label>
             <div class="formControls col-xs-6 col-sm-6 skin-minimal">
                 <div class="radio-box">
-                    <input type="radio" name="online" id="online-" value="">
-                    <label for="online-">Y</label>
+                    <input type="radio" name="enabled" id="enabled-0" value="Y">
+                    <label for="enabled-1">正常</label>
                 </div>
                 <div class="radio-box">
-                    <input type="radio" name="online" id="online-" value="">
-                    <label for="online-">N</label>
+                    <input type="radio" name="enabled" id="enabled-1" value="N">
+                    <label for="enabled-0">禁用</label>
                 </div>
             </div>
             <div class="col-xs-3 col-sm-3"></div>
@@ -73,7 +87,7 @@
 <script type="text/javascript" src="__LIB__/Validform/5.3.2/Validform.min.js"></script>
 <script>
     $(function () {
-        $("[name='online'][value='{$vo.online ?? 'Y'}']").prop("checked", true);
+        $("[name='enabled'][value='{$vo.enabled ?? 'Y'}']").prop("checked", true);
 
         $('.skin-minimal input').iCheck({
             checkboxClass: 'icheckbox-blue',

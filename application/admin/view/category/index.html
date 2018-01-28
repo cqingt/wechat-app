@@ -15,9 +15,8 @@
         <tr class="text-c">
             <th width="25"><input type="checkbox"></th>
             <th width="">分类名称</th>
-            <th width="">分类简称</th>
+            <th width="">父级分类</th>
             <th width="">分类图标</th>
-            <!--<th width="">切换图片</th>-->
             <th width="">是否显示</th>
             <th width="160">操作</th>
         </tr>
@@ -26,10 +25,9 @@
         {volist name="list" id="vo"}
         <tr class="text-c">
             <td><input type="checkbox" name="id[]" value="{$vo.id}"></td>
-            <td>{$vo.title}</td>
-            <td>{$vo.pinyin}</td>
+            <td>{$vo.name}</td>
+            <td>{$vo.parent_id|get_item=$categoryArr}</td>
             <td>{$vo.image|prev_image}</td>
-            <!--<td>{$vo.image_hover|prev_image}</td>-->
             <td>{$vo.enabled|get_enabled}</td>
             <td class="f-14">
                 {tp:menu menu='myedit' /}

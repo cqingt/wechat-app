@@ -11,5 +11,13 @@ class Category extends Controller
     // 方法黑名单
     protected static $blacklist = [];
 
-    
+    public function __construct()
+    {
+        parent::__construct();
+        $categories = model('category')->getParents();
+
+        $categoryArr = array_column($categories, 'name', 'id');
+        $this->view->assign('categories', $categories);
+        $this->view->assign('categoryArr', $categoryArr);
+    }
 }

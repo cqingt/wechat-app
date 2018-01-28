@@ -67,7 +67,7 @@ create table tp_order(
     pay_price decimal(10,2) not null default '0.00' comment '支付金额',
     pay_time int not null default '0' comment '支付时间',
     status tinyint not null default '0' comment '订单状态：0待支付，10已支付，20支付失败，30已发货，40已收货，50完成，60申请退款，70退款中，80已退款，90已关闭',
-    express_id int not null DEFAULT '0' comment '关联快递',
+    express varchar(32) not null DEFAULT '' comment '快递',
     express_no VARCHAR(32) not null DEFAULT '' comment '快递单号',
     express_json varchar(2048) not NULL DEFAULT '' comment '物流信息',
     enabled enum('Y','N') not null default 'Y' comment '是否可用，默认是',
@@ -89,6 +89,19 @@ create table tp_order_detail(
     create_time int not null default '0' comment '创建时间',
     update_time int not null default '0' comment '修改时间'
 )engine=innodb default charset='utf8' comment='订单详情';
+
+create table tp_order_address(
+    id int not null primary key auto_increment,
+    order_id int not null default '0',
+    username varchar(32) not null DEFAULT '' comment '联系人',
+    telephone char(11) not NULL DEFAULT '' comment '联系电话',
+   province varchar(16) not null DEFAULT  '' comment '省',
+    city varchar(16) not null DEFAULT  '' comment '市',
+    area varchar(16) not null default '' comment '区',
+    address varchar(255) not null default '' comment '详细地址',
+    create_time int not null default '0' comment '创建时间',
+    update_time int not null default '0' comment '修改时间'
+)engine=innodb default charset='utf8' comment='订单地址表';
 
 create table tp_order_refund(
     id int not null primary key auto_increment,

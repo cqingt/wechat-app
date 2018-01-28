@@ -168,6 +168,24 @@ function get_enabled($enabled, $imageShow = false)
     return ($imageShow === true) ? $showImg : $showText;
 }
 
+/**
+ * 用户禁用
+ * @param $enabled
+ * @return string
+ */
+function get_forbidden($enabled)
+{
+    switch ($enabled) {
+        case 'N' :
+            $showText = '<a href="javascript:;" class="btn btn-danger">已禁用</a>';
+            break;
+        default :
+            $showText = '<a href="javascript:;" class="btn btn-primary">否</a>';
+    }
+
+    return $showText;
+}
+
 function get_enum_status($enabled, $imageShow = false)
 {
     switch ($enabled) {
@@ -185,12 +203,25 @@ function get_enum_status($enabled, $imageShow = false)
 }
 
 /**
+ * @param $array
+ * @param $key
+ * @return string
+ */
+function get_item($key, $array) {
+    return isset($array[$key]) && $array[$key] ? $array[$key] : '--';
+}
+
+/**
  * 图片预览
  * @param $image
  * @return string
  */
 function prev_image($image)
 {
+    if (empty($image)) {
+        return '--';
+    }
+
     $image = $image ?: 'http://7j1y9l.com1.z0.glb.clouddn.com/image/jb96l2n4_4umlnvc3maec5a34f0e49be03.png';
     $html = '<a href="'.$image.'" target="_blank"><img src="'.$image.'" style="width:50px;height: 30px" title="预览" /></a>';
 

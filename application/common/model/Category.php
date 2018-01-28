@@ -15,11 +15,23 @@ class Category extends Model
     /**
      * @return array
      */
-    public function getMenu()
+    public function getCategory()
     {
         $result = $this->where([ 'enabled' => 'Y'])
-            ->order('id ASC')
-            ->field(['id', 'title'])
+            ->order('id DESC')
+            ->field(['id', 'name'])
+            ->select()
+            ->toArray();
+
+        return $result;
+    }
+
+    public function getParents()
+    {
+        $result = $this->where([ 'enabled' => 'Y'])
+            ->where(['parent_id' => 0])
+            ->order('id DESC')
+            ->field(['id', 'name'])
             ->select()
             ->toArray();
 
