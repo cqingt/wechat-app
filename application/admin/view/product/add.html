@@ -1,0 +1,174 @@
+{extend name="template/base" /}
+{block name="content"}
+<style>
+    .tips{
+        font-size:10px; color:red;padding-left:30px;
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form" method="post" action="{:\\think\\Request::instance()->baseUrl()}">
+        <input type="hidden" name="id" value="{$vo.id ?? ''}">
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>产品名称：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="产品名称" name="name"  datatype="*" nullmsg="请填写产品名称">
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>产品图片(300 * 300)：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" name="image" id="image" placeholder="请点击后面的上传按钮" value="{$vo.image ?? ''}" datatype="*" nullmsg="请填写图片url" style="width: 70%">
+                <button type="button" class="btn btn-primary radius" onclick="layer_open('文件上传','{:\\think\\Url::build(\'Upload/index\', [\'id\' => \'image\'])}')">上传</button>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">产品简介：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <textarea class="textarea" placeholder="备注" name="description" onKeyUp="textarealength(this, 100)"></textarea>
+                <p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>所属分类：</label>
+            <div class="formControls col-xs-6 col-sm-2">
+                <div class="select-box">
+                    <select name="category_id" class="select" >
+                        <option value="">请选择商品分类</option>
+                        {foreach $categories as $item }
+                        <option value="{$item.id}">{$item.name}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">参考价格：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="价格" name="price" value="" style="width:100px;">
+                <span class="tips">小程序展示的价格，下单价格以sku价格为准</span>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">参考库存：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="number" class="input-text" placeholder="库存" name="stock" value="" style="width:100px;">
+                <span class="tips">小程序展示的库存，下单库存以sku库存为准</span>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>上下架：</label>
+            <div class="formControls col-xs-6 col-sm-6 skin-minimal">
+                <div class="radio-box">
+                    <input type="radio" name="online" id="enabled-0" value="Y">
+                    <label for="enabled-1">上架</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" name="online" id="enabled-1" value="N">
+                    <label for="enabled-0">下架</label>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>产品sku属性：</label>
+            <div class="formControls col-xs-6 col-sm-2">
+                <input type="text" class="input-text" placeholder="产品SKU属性：如颜色、尺码等" name="attr" value="" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>设置SKU属性：</label>
+            <table class="table table-border table-bordered table-hover table-bg mt-20 col-sm-6" style="margin-left: 15px;padding-left:0;padding-right:0;">
+                <thead>
+                <tr class="text-c">
+                    <th width="">sku名称</th>
+                    <th width="">价格（元）</th>
+                    <th>库存</th>
+                    <th width="150">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td><input type="text" class="input-text" placeholder="例: 白色40码" name="sku[attr][]" value="" datatype="*"></td>
+                    <td><input type="text" class="input-text" placeholder="单价" name="sku[price][]" value="" datatype="/\d+\.?\d*/"></td>
+                    <td><input type="number" class="input-text" placeholder="库存" name="sku[stock][]" value="" min="1" datatype="*"></td>
+                    <td>
+                        <button class="btn btn-primary radius add-sku">新增SKU</button>
+                        <button class="btn btn-danger radius del-sku">删除</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <button type="submit" class="btn btn-primary radius">&nbsp;&nbsp;提交&nbsp;&nbsp;</button>
+                <button type="button" class="btn btn-default radius ml-20" onClick="layer_close();">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+{block name="script"}
+<script type="text/javascript" src="__LIB__/Validform/5.3.2/Validform.min.js"></script>
+<script>
+    $(function () {
+        $("[name='online'][value='{$vo.online ?? 'Y'}']").prop("checked", true);
+        $("[name='category_id']").find("[value='{$vo.category_id ?? ''}']").attr("selected", true);
+
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+
+        $("#form").Validform({
+            tiptype: 2,
+            ajaxPost: true,
+            showAllError: true,
+            callback: function (ret){
+                ajax_progress(ret);
+            }
+        });
+
+        var sku = '<tr>\n' +
+            '<td><input type="text" class="input-text" placeholder="例: 白色40码" name="sku[attr][]" value="" datatype="*"></td>\n' +
+            '<td><input type="text" class="input-text" placeholder="单价" name="sku[price][]" value="" datatype="/\\d+\\.?\\d*/"></td>\n' +
+            '<td><input type="number" class="input-text" placeholder="库存" name="sku[stock][]" value="" min="1" datatype="*"></td>\n' +
+            '<td><button class="btn btn-primary radius add-sku">新增SKU</button> <button class="btn btn-danger radius del-sku">删除</button></td>\n' +
+            '</tr>';
+
+        // 新增sku
+        $('table').on('click', '.add-sku', function (event) {
+            preventDefault(event);
+
+             $(this).parents('tr').after(sku);
+        });
+
+        // 删除sku
+        $('table').on('click', '.del-sku', function (event) {
+            preventDefault(event);
+
+            $(this).parents('tr').remove();
+        });
+
+        function preventDefault(event){
+            if(document.all){
+                window.event.returnValue = false;
+            } else{
+                event.preventDefault();
+            }
+        }
+    })
+</script>
+{/block}

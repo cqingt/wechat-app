@@ -102,6 +102,11 @@ class Product extends Controller
             // 插入
             $data = $this->request->except(['id']);
 
+            if (isset($data['sku'])) {
+                $skus = $data['sku'];
+                unset($data['sku']);
+            }
+
             // 验证
             if (class_exists($validateClass = Loader::parseClass(Config::get('app.validate_path'), 'validate', $controller))) {
                 $validate = new $validateClass();
@@ -111,19 +116,37 @@ class Product extends Controller
             }
 
             // 写入数据
-            if (
+/*            if (
                 class_exists($modelClass = Loader::parseClass(Config::get('app.model_path'), 'model', $this->parseCamelCase($controller)))
                 || class_exists($modelClass = Loader::parseClass(Config::get('app.model_path'), 'model', $controller))
             ) {
                 //使用模型写入，可以在模型中定义更高级的操作
                 $model = new $modelClass();
                 $ret = $model->isUpdate(false)->save($data);
-            } else {
+            } else {*/
                 // 简单的直接使用db写入
                 Db::startTrans();
                 try {
                     $model = Db::name($this->parseTable($controller));
                     $ret = $model->insert($data);
+                    $productId = $model->getLastInsID();
+
+                    $skuArr = [];
+                    $skuModel = new ProductSku();
+
+                    if (isset($skus)) {
+                        $length = count($skus['attr']);
+                        for ($i = 0; $i < $length; $i++) {
+                            foreach ($skus as $key => $sku) {
+                                $skuArr[$i][$key] = $sku[$i];
+                            }
+                            $skuArr[$i]['product_id'] = $productId;
+
+                            // 批量更新或新增
+                            $skuModel->insert($skuArr[$i]);
+                        }
+                    }
+
                     // 提交事务
                     Db::commit();
                 } catch (\Exception $e) {
@@ -132,11 +155,11 @@ class Product extends Controller
 
                     return ajax_return_adv_error($e->getMessage());
                 }
-            }
-
+            //}
             return ajax_return_adv('添加成功');
         } else {
             // 添加
+            $this->view->assign('skus', []);
             return $this->view->fetch(isset($this->template) ? $this->template : 'edit');
         }
     }
