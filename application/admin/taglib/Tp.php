@@ -171,6 +171,18 @@ class Tp extends Taglib
                     list($url, $param) = $this->parseUrl($url);
                     $parseStr .= '<a class="btn btn-primary radius mr-5" href="javascript:;" onclick="full_page(\'' . $title . '\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')"><i class="Hui-iconfont">&#xe600;</i> ' . $title . '</a>';
                     break;
+                case 'fulldetail': // 新增
+                    $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '订单详情';
+                    $url = substr($url, 0, 4) == 'full' ? substr($url, 4) : $url;
+                    list($url, $param) = $this->parseUrl($url, 'id=$vo["id"]');
+                    $parseStr .= '<a href="javascript:;" onclick="full_page(\'' . $title . '\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')" class="btn btn-secondary radius mr-5">' . $title . '</a>';
+                    break;
+                case 'fullexpress': // 新增
+                    $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '物流信息';
+                    $url = substr($url, 0, 4) == 'full' ? substr($url, 4) : $url;
+                    list($url, $param) = $this->parseUrl($url, 'id=$vo["id"]');
+                    $parseStr .= '<a href="javascript:;" onclick="full_page(\'' . $title . '\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')" class="btn btn-secondary radius mr-5">' . $title . '</a>';
+                    break;
                 default:
                     // 默认为小菜单
                     $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '菜单';

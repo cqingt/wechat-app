@@ -5,7 +5,13 @@ namespace app\admin\controller;
 
 use app\admin\Controller;
 use app\common\model\Product as ModelProduct;
+use app\common\model\ProductSku;
 use app\common\model\Category as ModelCategory;
+use think\Loader;
+use think\Config;
+use think\Db;
+use think\exception\HttpException;
+use think\Log;
 
 class Product extends Controller
 {
@@ -36,8 +42,198 @@ class Product extends Controller
         $map['_table'] = "product";
         $map['_order_by'] = "product.id desc";
         $map['_func'] = function (ModelProduct $model) use ($map) {
-            $model->alias($map['_table'])->join(ModelCategory::getTable() . ' category', 'product.category_id = category.id');
+            $model->alias($map['_table'])->join(ModelCategory::getTable() . ' category', 'product.category_id = category.id')
+            ->where(['product.enabled' => 'Y']);
         };
         $map['_field'] = ['product.id','product.name','product.image','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
+    }
+
+    protected function filterOffline(&$map)
+    {
+        if ($this->request->param("name")) {
+            $map['name'] = ["like", "%" . $this->request->param("name") . "%"];
+        }
+        if ($this->request->param("category_id")) {
+            $map['category_id'] = ["=", $this->request->param("category_id")];
+        }
+        // 设置属性
+        $map['_table'] = "product";
+        $map['_order_by'] = "product.id desc";
+        $map['_func'] = function (ModelProduct $model) use ($map) {
+            $model->alias($map['_table'])->join(ModelCategory::getTable() . ' category', 'product.category_id = category.id')
+                ->where(['product.enabled' => 'N']);
+        };
+        $map['_field'] = ['product.id','product.name','product.image','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
+    }
+
+    // 下架商品
+    public function offline()
+    {
+        $model = $this->getModel();
+
+        // 列表过滤器，生成查询Map对象
+        $map = $this->search($model, [$this->fieldIsDelete => $this::$isdelete]);
+
+        // 特殊过滤器，后缀是方法名的
+        $actionFilter = 'filter' . $this->request->action();
+        if (method_exists($this, $actionFilter)) {
+            $this->$actionFilter($map);
+        }
+
+        // 自定义过滤器
+        if (method_exists($this, 'filterOffline')) {
+            $this->filterOffline($map);
+        }
+
+        $this->datalist($model, $map);
+
+        return $this->view->fetch();
+    }
+
+    /**
+     * 添加
+     * @return mixed
+     */
+    public function add()
+    {
+        $controller = $this->request->controller();
+
+        if ($this->request->isAjax()) {
+            // 插入
+            $data = $this->request->except(['id']);
+
+            // 验证
+            if (class_exists($validateClass = Loader::parseClass(Config::get('app.validate_path'), 'validate', $controller))) {
+                $validate = new $validateClass();
+                if (!$validate->check($data)) {
+                    return ajax_return_adv_error($validate->getError());
+                }
+            }
+
+            // 写入数据
+            if (
+                class_exists($modelClass = Loader::parseClass(Config::get('app.model_path'), 'model', $this->parseCamelCase($controller)))
+                || class_exists($modelClass = Loader::parseClass(Config::get('app.model_path'), 'model', $controller))
+            ) {
+                //使用模型写入，可以在模型中定义更高级的操作
+                $model = new $modelClass();
+                $ret = $model->isUpdate(false)->save($data);
+            } else {
+                // 简单的直接使用db写入
+                Db::startTrans();
+                try {
+                    $model = Db::name($this->parseTable($controller));
+                    $ret = $model->insert($data);
+                    // 提交事务
+                    Db::commit();
+                } catch (\Exception $e) {
+                    // 回滚事务
+                    Db::rollback();
+
+                    return ajax_return_adv_error($e->getMessage());
+                }
+            }
+
+            return ajax_return_adv('添加成功');
+        } else {
+            // 添加
+            return $this->view->fetch(isset($this->template) ? $this->template : 'edit');
+        }
+    }
+
+    /**
+     * 编辑
+     * @return mixed
+     */
+    public function edit()
+    {
+        $controller = $this->request->controller();
+
+        if ($this->request->isAjax()) {
+            $data = $this->request->post();
+            if (!$data['id']) {
+                return ajax_return_adv_error("缺少参数ID");
+            }
+
+            // 验证
+            if (class_exists($validateClass = Loader::parseClass(Config::get('app.validate_path'), 'validate', $controller))) {
+                $validate = new $validateClass();
+                if (!$validate->check($data)) {
+                    return ajax_return_adv_error($validate->getError());
+                }
+            }
+
+            if (isset($data['sku'])) {
+                $skus = $data['sku'];
+                unset($data['sku']);
+            }
+
+            // 更新数据
+            /*if (
+                class_exists($modelClass = Loader::parseClass(Config::get('app.model_path'), 'model', $this->parseCamelCase($controller)))
+                || class_exists($modelClass = Loader::parseClass(Config::get('app.model_path'), 'model', $controller))
+            ) {
+                // 使用模型更新，可以在模型中定义更高级的操作
+                $model = new $modelClass();
+                $ret = $model->isUpdate(true)->save($data, ['id' => $data['id']]);
+            } else {*/
+                // 简单的直接使用db更新
+                Db::startTrans();
+                try {
+                    $model = Db::name($this->parseTable($controller));
+                    $ret = $model->where('id', $data['id'])->update($data);
+
+                    $skuArr = [];
+                    if (isset($skus)) {
+                        $length = count($skus['attr']);
+                        for ($i = 0; $i < $length; $i++) {
+                            foreach ($skus as $key => $sku) {
+                                //$skuArr[$i]['create_time'] = time();
+                                $skuArr[$i]['product_id'] = $data['id'];
+
+                                if ($key == 'id' && $sku[$i] < 1) {
+                                    continue;
+                                }
+                                $skuArr[$i][$key] = $sku[$i];
+                                //$skuArr[$i]['update_time'] = time();
+                            }
+                        }
+                    }
+                    Log::record('skus:' . var_export($skuArr, true));
+
+                    (new ProductSku())->insertAll($skuArr);
+                    //del('ProductSku')->insertAll($skuArr);
+                    //Db::name('product_sku')->insertAll($skuArr);
+
+                    // 删除sku，新增sku
+                    // 提交事务
+                    Db::commit();
+                } catch (\Exception $e) {
+                    // 回滚事务
+                    Db::rollback();
+
+                    return ajax_return_adv_error($e->getMessage());
+                }
+            //}
+
+            return ajax_return_adv("编辑成功");
+        } else {
+            // 编辑
+            $id = $this->request->param('id');
+            if (!$id) {
+                throw new HttpException(404, "缺少参数ID");
+            }
+            $vo = $this->getModel($controller)->find($id);
+            if (!$vo) {
+                throw new HttpException(404, '该记录不存在');
+            }
+
+            $skus = (new ProductSku())->getAll($id);
+
+            $this->view->assign('skus', $skus);
+            $this->view->assign("vo", $vo);
+
+            return $this->view->fetch();
+        }
     }
 }
