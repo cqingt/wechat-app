@@ -109,7 +109,7 @@ create table tp_order_refund(
     refund_sn varchar(20) not null DEFAULT '' comment '退款单号',
     refund_price decimal(10,2) not null default '0.00' comment '退款金额',
     status tinyint not null default '100' comment '退款状态：100申请退款，110 拒绝退款，120同意退款，130待收货，140确认收货，150已退款',
-    express_id int not null DEFAULT '0' comment '关联快递',
+    express varchar(32) not null DEFAULT '0' comment '快递',
     express_no VARCHAR(32) not null DEFAULT '' comment '快递单号',
     express_json varchar(2048) not NULL DEFAULT '' comment '物流信息',
     reason VARCHAR(255) not null DEFAULT '' comment '退款原因',

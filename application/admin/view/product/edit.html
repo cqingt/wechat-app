@@ -102,7 +102,11 @@
                         <td><input type="text" class="input-text" placeholder="例: 白色40码" name="sku[attr][]" value="{$sku.attr}" datatype="*"></td>
                         <td><input type="text" class="input-text" placeholder="单价" name="sku[price][]" value="{$sku.price}" datatype="/\d+\.?\d*/"></td>
                         <td><input type="number" class="input-text" placeholder="库存" name="sku[stock][]" value="{$sku.stock}" min="1" datatype="*"></td>
-                        <td><input type="hidden" name="sku[id][]" value="{$sku.id}"><button class="btn btn-primary radius add-sku">新增SKU</button> <button class="btn btn-danger radius del-sku">删除</button></td>
+                        <td>
+                            <input type="hidden" name="sku[id][]" value="{$sku.id}">
+                            <button class="btn btn-primary radius add-sku">新增SKU</button>
+                            <button class="btn btn-danger radius del-sku" data-id="{$sku.id}" onclick="del_forever(this, {$sku['id']},'/admin/product/delsku.html')">删除</button>
+                        </td>
                     </tr>
                     {/foreach}
                 </tbody>
@@ -149,15 +153,27 @@
 
         // 新增sku
         $('table').on('click', '.add-sku', function (event) {
-            event.preventDefault();
+            preventDefault(event);
 
              $(this).parents('tr').after(sku);
         });
 
         // 删除sku
-        $('table').on('click', '.del-sku', function () {
-            $(this).parents('tr').remove();
+        $('table').on('click', '.del-sku', function (event) {
+            preventDefault(event);
+
+            if ($(this).data('id') < 1) {
+                $(this).parents('tr').remove();
+            }
         });
+
+        function preventDefault(event){
+            if(document.all){
+                window.event.returnValue = false;
+            } else{
+                event.preventDefault();
+            }
+        }
     })
 </script>
 {/block}

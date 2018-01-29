@@ -107,12 +107,15 @@ class Order extends Controller
         }
 
         if (!empty($vo['express_json'])) {
-            $vo['express_json'] = json_decode($vo['express_json'], true);
+            $express = json_decode($vo['express_json'], true);
+            if (!empty($express['data'])) {
+                $expressData = $express['data'];
+            }
         }
 
         $this->view->assign("vo", $vo);
         $this->view->assign("goods", $goods);
-        $this->view->assign("express", $vo['express_json']);
+        $this->view->assign("express", isset($expressData) ? $expressData : []);
 
         return $this->view->fetch('edit');
     }

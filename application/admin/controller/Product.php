@@ -184,28 +184,27 @@ class Product extends Controller
                     $ret = $model->where('id', $data['id'])->update($data);
 
                     $skuArr = [];
+                    $skuModel = new ProductSku();
+
                     if (isset($skus)) {
                         $length = count($skus['attr']);
                         for ($i = 0; $i < $length; $i++) {
                             foreach ($skus as $key => $sku) {
-                                //$skuArr[$i]['create_time'] = time();
-                                $skuArr[$i]['product_id'] = $data['id'];
-
-                                if ($key == 'id' && $sku[$i] < 1) {
-                                    continue;
-                                }
                                 $skuArr[$i][$key] = $sku[$i];
-                                //$skuArr[$i]['update_time'] = time();
+                            }
+                            $skuArr[$i]['product_id'] = $data['id'];
+
+                            // 批量更新或新增
+                            if ($skuId = $skuArr[$i]['id']) {
+                                unset($skuArr[$i]['id']);
+                                $skuModel->update($skuArr[$i], ['id' => $skuId]);
+                            } else {
+                                unset($skuArr[$i]['id']);
+                                $skuModel->insert($skuArr[$i]);
                             }
                         }
                     }
-                    Log::record('skus:' . var_export($skuArr, true));
 
-                    (new ProductSku())->insertAll($skuArr);
-                    //del('ProductSku')->insertAll($skuArr);
-                    //Db::name('product_sku')->insertAll($skuArr);
-
-                    // 删除sku，新增sku
                     // 提交事务
                     Db::commit();
                 } catch (\Exception $e) {
@@ -234,6 +233,21 @@ class Product extends Controller
             $this->view->assign("vo", $vo);
 
             return $this->view->fetch();
+        }
+    }
+
+    public function delsku()
+    {
+        if ($this->request->isAjax()) {
+            $data = $this->request->post();
+
+            if (! $data['id']) {
+                return ajax_return_adv_error("缺少参数ID");
+            }
+
+            (new ProductSku())->where(['id' => $data['id']])->delete();
+
+            return ajax_return_adv("删除成功");
         }
     }
 }

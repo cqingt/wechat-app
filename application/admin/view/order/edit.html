@@ -8,9 +8,12 @@
         margin: 50px 20px;
 
     }
+    .order-info{
+        margin-top:20px;
+    }
     div.deadline{
         margin-top:1px;
-        border-bottom: 1px solid #148cf1;
+        border-bottom: 1px solid #ede1e1;
     }
     .goods-info table{
         margin-left:5%;
@@ -207,7 +210,7 @@
         <div class="express-info">
             <div class="title">物流信息</div>
             <ul id="result" class="result-list">
-                {foreach $express['data'] as $key => $item}
+                {foreach $express as $key => $item}
                 <li class="first">
                     <div class="col1">
                         <dl><dt>{$item['time']|strtotime|date='Y-m-d',###}</dt><dd>{$item['time']|strtotime|date='H:i',###}</dd></dl>

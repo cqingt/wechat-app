@@ -23,6 +23,7 @@ class ProductSku extends Model
     public function getAll($productId)
     {
         $skus = $this->where(['product_id' => $productId])
+            ->order('attr DESC')
             ->select()
             ->toArray();
 
