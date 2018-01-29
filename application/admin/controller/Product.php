@@ -127,6 +127,7 @@ class Product extends Controller
                 // 简单的直接使用db写入
                 Db::startTrans();
                 try {
+                    $data['content'] = 'aa'; //todo
                     $model = Db::name($this->parseTable($controller));
                     $ret = $model->insert($data);
                     $productId = $model->getLastInsID();
@@ -160,7 +161,7 @@ class Product extends Controller
         } else {
             // 添加
             $this->view->assign('skus', []);
-            return $this->view->fetch(isset($this->template) ? $this->template : 'edit');
+            return $this->view->fetch('add');
         }
     }
 
