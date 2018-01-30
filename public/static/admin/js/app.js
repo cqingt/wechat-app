@@ -453,6 +453,10 @@ function recycle(obj, id, url, fn) {
     _recycle(obj, id, url, '您确定要从回收站还原此条数据吗？', fn);
 }
 
+function online(obj, id, url, fn) {
+    _recycle(obj, id, url, '您确定要从仓库中上架此产品吗？', fn);
+}
+
 /**
  * 批量永久删除操作项
  * @param url 批量删除地址，一般为 {:url('delete_forever')}

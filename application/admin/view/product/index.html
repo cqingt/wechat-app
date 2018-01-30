@@ -36,6 +36,39 @@
 <script>
     $(function () {
         $("[name='category_id']").find("[value='{$Request.param.category_id}']").attr("selected", true);
+
+        $('.attrs').on('click', function () {
+            var table = $(this).next('table');
+            var productId = $(this).data('id');
+
+            if(table.is(":visible")) {
+                table.hide();
+                return;
+            }
+
+            if (table.find('tbody').find('tr').length) {
+                table.show();
+            } else {
+                var _html = '';
+
+                $.getJSON("{:url('product/getSku')}", {id: productId}, function (data) {
+                    if (len = data.length) {
+                        for (var i = 0; i < len ; i++) {
+                            _html += '<tr>\n' +
+                                '<td>' + data[i].attr + '</td>\n' +
+                                '<td>' + data[i].price + '</td>\n' +
+                                '<td>' + data[i].stock + '</td>\n' +
+                                '</tr>';
+                        }
+                    } else {
+                        _html = '<tr><td colspan="3"><center>暂无数据</center></td></tr>';
+                    }
+
+                    table.find('tbody').html(_html);
+                    table.show();
+                });
+            }
+        })
     })
 </script>
 {/block}

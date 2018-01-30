@@ -26,7 +26,10 @@ create table tp_product(
     name varchar(255) not null default '' comment '产品标题',
     description varchar(512) not null default '' comment '产品简单介绍',
     price decimal(10,2) not null default '0.00' comment '产品价格',
-    origin_price decimal(10,2) not null default '0.00' comment '产品原件格',
+    origin_price decimal(10,2) not null default '0.00' comment '产品原价格',
+    sales int not null default '0' comment '产品销量',
+    fade_sales int not null default '0' comment '产品虚假销量',
+    hots int not null default '1' comment '产品热度：越大排序越靠前',
     attr varchar(32) not null default '' comment '产品属性名称：如颜色分类，尺码等',
     stock int not null default '0' comment 'SKU库存',
     content text not null comment '产品内容',
@@ -188,3 +191,24 @@ create table tp_statistics(
     create_time int not null default '0' comment '创建时间',
     update_time int not null default '0' comment '修改时间'
 )engine=innodb default charset='utf8' comment='统计表';
+
+create table tp_company_account(
+    id int not null primary key auto_increment,
+    telephone char(11) not null DEFAULT '' comment '联系手机',
+    company varchar(64) not null default '' comment '公司名称',
+    username varchar(16) not null DEFAULT '' comment '联系用户',
+    amount  decimal(10,2) not null DEFAULT '0.00' comment '花费金额，元',
+    freeze  decimal(10,2) not null DEFAULT '0.00' comment '冻结金额，元',
+    create_time int not null default '0' comment '创建时间',
+    update_time int not null default '0' comment '修改时间'
+)engine=innodb default charset='utf8' comment='账户余额';
+
+create table tp_consume_log(
+    id int not null primary key auto_increment,
+    order_id int not null DEFAULT '0' comment '订单ID',
+    amount decimal(10,2) not null DEFAULT '0.00' comment '消费金额，元',
+    consume enum('SMS', 'EXP') NOT NULL DEFAULT 'SMS' comment '消费项目：短信，快递查询',
+    remark varchar(255) not null DEFAULT '' comment '说明',
+    create_time int not null default '0' comment '创建时间',
+    update_time int not null default '0' comment '修改时间'
+)engine=innodb default charset='utf8' comment='消费日志';

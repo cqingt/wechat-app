@@ -43,9 +43,9 @@ class Product extends Controller
         $map['_order_by'] = "product.id desc";
         $map['_func'] = function (ModelProduct $model) use ($map) {
             $model->alias($map['_table'])->join(ModelCategory::getTable() . ' category', 'product.category_id = category.id')
-            ->where(['product.enabled' => 'Y']);
+            ->where(['product.online' => 'Y']);
         };
-        $map['_field'] = ['product.id','product.name','product.image','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
+        $map['_field'] = ['product.id','product.name','product.image','product.sales','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
     }
 
     protected function filterOffline(&$map)
@@ -61,9 +61,9 @@ class Product extends Controller
         $map['_order_by'] = "product.id desc";
         $map['_func'] = function (ModelProduct $model) use ($map) {
             $model->alias($map['_table'])->join(ModelCategory::getTable() . ' category', 'product.category_id = category.id')
-                ->where(['product.enabled' => 'N']);
+                ->where(['product.online' => 'N']);
         };
-        $map['_field'] = ['product.id','product.name','product.image','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
+        $map['_field'] = ['product.id','product.name','product.image','product.sales','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
     }
 
     // 下架商品
@@ -88,6 +88,22 @@ class Product extends Controller
         $this->datalist($model, $map);
 
         return $this->view->fetch();
+    }
+
+    // 上架
+    public function online()
+    {
+        if ($this->request->isAjax()) {
+            $data = $this->request->post();
+
+            if (! $data['id']) {
+                return ajax_return_adv_error("缺少参数ID");
+            }
+
+            $this->getModel('Product')->update(['online' => 'Y'], ['id' => $data['id']]);
+
+            return ajax_return_adv("删除成功");
+        }
     }
 
     /**
@@ -257,6 +273,21 @@ class Product extends Controller
             $this->view->assign("vo", $vo);
 
             return $this->view->fetch();
+        }
+    }
+
+    public function getSku()
+    {
+        if ($this->request->isAjax()) {
+            $data = $this->request->get();
+
+            if (! $data['id']) {
+                return ajax_return_adv_error("缺少参数ID");
+            }
+
+            $skus = (new ProductSku())->getAll($data['id']);
+
+            return json($skus);
         }
     }
 
