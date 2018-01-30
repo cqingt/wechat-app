@@ -1,0 +1,75 @@
+{extend name="template/base" /}
+{block name="content"}
+<div class="page-container">
+    <form class="mb-20" method="get" action="{:\\think\\Url::build($Request.action)}">
+        <input type="text" class="input-text" style="width:250px" placeholder="订单号" name="order_sn" value="{$Request.param.order_sn}" >
+        <input type="text" class="input-text" style="width:250px" placeholder="退款单号" name="refund_sn" value="{$Request.param.refund_sn}" >
+        <button type="submit" class="btn btn-success"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+    </form>
+    <div class="cl pd-5 bg-1 bk-gray">
+        <span class="l">
+        </span>
+        <span class="r pt-5 pr-5">
+            共有数据 ：<strong>{$count ?? '0'}</strong> 条
+        </span>
+    </div>
+    <table class="table table-border table-bordered table-hover table-bg mt-20  table_fixed">
+        <thead>
+        <tr class="text-c">
+            <th width="25"><input type="checkbox"></th>
+            <th width="30">ID</th>
+            <th width="140">订单号</th>
+            <th width="140">退款单号</th>
+            <th width="60">退款金额</th>
+            <th width="100">退款状态</th>
+            <th width="120">快递</th>
+            <th width="130">快递单号</th>
+            <th width="140">退款原因</th>
+            <th width="110">退款时间</th>
+            <th width="200">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr class="text-c">
+            <td><input type="checkbox" name="id[]" value="{$vo.id}"></td>
+            <td>{$vo.id}</td>
+            <td>{$vo.order_sn|high_light=$Request.param.order_sn}</td>
+            <td>{$vo.refund_sn|high_light=$Request.param.refund_sn}</td>
+            <td>{$vo.refund_price}</td>
+            <td>{$status[$vo.status]}</td>
+            <td>{$vo.express}</td>
+            <td>{$vo.express_no}</td>
+            <td>{$vo.reason}</td>
+            <td>{$vo.create_time|date='Y-m-d H:i',###}</td>
+            <td class="f-14">
+                {tp:menu menu='myedit' /}
+
+                {switch name="$vo.status"}
+                    {case value="100"}
+                        <a title="同意退款" href="javascript:;" class="btn btn-primary radius" data-status="120">同意退款</a>
+                        <a title="拒绝退款" href="javascript:;" class="btn btn-danger radius" data-status="110">拒绝退款</a>
+                    {/case}
+                    {case value="130"}
+                        <a title="确认收货" href="javascript:;" class="btn btn-primary radius"  data-status="140">确认收货</a>
+                    {/case}
+                    {case value="140"}
+                        <a title="退款" href="javascript:;" class="btn btn-primary radius"  data-status="150">退款</a>
+                    {/case}
+                {/switch}
+
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="page-bootstrap">{$page ?? ''}</div>
+</div>
+{/block}
+{block name="script"}
+<script>
+    $(function () {
+        table_fixed('.table_fixed');
+    })
+</script>
+{/block}

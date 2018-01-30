@@ -5,16 +5,13 @@ namespace app\admin\controller;
 
 use app\admin\Controller;
 
-class Question extends Controller
+class CompanyAddress extends Controller
 {
     use \app\admin\traits\controller\Controller;
     // 方法黑名单
     protected static $blacklist = [];
 
-    protected function filter(&$map)
-    {
-        if ($this->request->param("title")) {
-            $map['title'] = ["like", "%" . $this->request->param("title") . "%"];
-        }
-    }
+    protected static $isdelete = false;
+
+    
 }

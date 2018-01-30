@@ -44,7 +44,10 @@ class Order extends Controller
         $map['_func'] = function (ModelOrder $model) use ($map) {
             $model->alias($map['_table'])->join(ModelOrderAddress::getTable() . ' address', 'address.order_id = orders.id');
         };
-        $map['_field'] = ['orders.id','orders.order_sn','orders.price','orders.status','orders.express','orders.express_no','orders.pay_time','address.username','address.telephone'];
+        $map['_field'] = [
+            'orders.id','orders.order_sn','orders.price','orders.status','orders.express','orders.express_no',
+            'orders.pay_time','address.username','address.telephone'
+        ];
     }
 
     /**

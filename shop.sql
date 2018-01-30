@@ -212,3 +212,13 @@ create table tp_consume_log(
     create_time int not null default '0' comment '创建时间',
     update_time int not null default '0' comment '修改时间'
 )engine=innodb default charset='utf8' comment='消费日志';
+
+create table tp_company_address(
+    id int not null primary key auto_increment,
+    username varchar(64) not null DEFAULT '' comment '联系人',
+    telephone char(11) not NULL DEFAULT '' comment '联系电话',
+    address varchar(255) not null default '' comment '详细地址',
+    remark varchar(255) not null default '' comment '其他说明',
+    create_time int not null default '0' comment '创建时间',
+    update_time int not null default '0' comment '修改时间'
+)engine=innodb default charset='utf8' comment='退款地址';

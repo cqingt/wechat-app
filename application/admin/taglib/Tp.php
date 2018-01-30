@@ -151,13 +151,13 @@ class Tp extends Taglib
                 case 'mydelete':// 新增
                     $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '删除';
                     list($url, $param) = $this->parseUrl($url);
-                    $parseStr .= ' <a href="javascript:;" onclick="del_forever(this,\'{$vo.id}\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')" class="btn btn-danger">' . $title . '</a>';
+                    $parseStr .= ' <a href="javascript:;" onclick="del_forever(this,\'{$vo.id}\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')" class="btn btn-danger radius">' . $title . '</a>';
                     break;
                 case 'myedit': // 新增
                     $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '编辑';
                     $url = substr($url, 0, 2) == 'my' ? substr($url, 2) : $url;
                     list($url, $param) = $this->parseUrl($url, 'id=$vo["id"]');
-                    $parseStr .= ' <a title="' . $title . '" href="javascript:;" onclick="layer_open(\'' . $title . '\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')" class="btn btn-default">' . $title . '</a>';
+                    $parseStr .= ' <a title="' . $title . '" href="javascript:;" onclick="layer_open(\'' . $title . '\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')" class="btn btn-default radius">' . $title . '</a>';
                     break;
                 case 'fulledit': // 新增
                     $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '编辑';

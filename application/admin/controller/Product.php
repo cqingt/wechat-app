@@ -45,7 +45,10 @@ class Product extends Controller
             $model->alias($map['_table'])->join(ModelCategory::getTable() . ' category', 'product.category_id = category.id')
             ->where(['product.online' => 'Y']);
         };
-        $map['_field'] = ['product.id','product.name','product.image','product.sales','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
+        $map['_field'] = [
+            'product.id','product.name','product.image','product.sales','product.attr','product.price','product.stock',
+            'category.name as category' , 'product.create_time'
+        ];
     }
 
     protected function filterOffline(&$map)
@@ -63,7 +66,10 @@ class Product extends Controller
             $model->alias($map['_table'])->join(ModelCategory::getTable() . ' category', 'product.category_id = category.id')
                 ->where(['product.online' => 'N']);
         };
-        $map['_field'] = ['product.id','product.name','product.image','product.sales','product.attr','product.price','product.stock', 'category.name as category' , 'product.create_time'];
+        $map['_field'] = [
+            'product.id','product.name','product.image','product.sales','product.attr','product.price','product.stock',
+            'category.name as category' , 'product.create_time'
+        ];
     }
 
     // 下架商品
@@ -276,6 +282,7 @@ class Product extends Controller
         }
     }
 
+    // 获取所有sku
     public function getSku()
     {
         if ($this->request->isAjax()) {
@@ -291,7 +298,8 @@ class Product extends Controller
         }
     }
 
-    public function delsku()
+    // 删除单个sku
+    public function delSku()
     {
         if ($this->request->isAjax()) {
             $data = $this->request->post();
