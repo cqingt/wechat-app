@@ -32,6 +32,7 @@ create table tp_product(
     hots int not null default '1' comment '产品热度：越大排序越靠前',
     attr varchar(32) not null default '' comment '产品属性名称：如颜色分类，尺码等',
     stock int not null default '0' comment 'SKU库存',
+    integral int not null DEFAULT '0' comment '积分',
     content text not null comment '产品内容',
     online enum('Y','N') not null default 'Y' comment '是否上架，Y是',
     enabled enum('Y','N') not null default 'Y' comment '是否可用，默认是',
@@ -222,3 +223,10 @@ create table tp_company_address(
     create_time int not null default '0' comment '创建时间',
     update_time int not null default '0' comment '修改时间'
 )engine=innodb default charset='utf8' comment='退款地址';
+
+// 开启到店自提，开启快递|  到店自提地址，电话，联系人，营业时间
+
+INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('1', 'EXPRESS', 'FREE', '运费：FREE免邮，FIXED固定邮费，', 'Y', '1517499545', '1517499545');
+INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('2', 'EXPRESS_FEE', '12', '固定邮费金额', 'Y', '1517499545', '1517499545');
+INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('3', 'EXPRESS_USE_INTEGRAL', 'YES', '开启积分抵扣邮费', 'Y', '1517499545', '1517499545');
+INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('4', 'HOW_INTEGRAL', '100', '多少积分抵扣一元邮费', 'Y', '1517499545', '1517499545');
