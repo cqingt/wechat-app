@@ -1,0 +1,224 @@
+{extend name="template/base" /}
+{block name="content"}
+<style>
+    .tips{
+        font-size:10px; color:red;padding-left:30px;
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form" method="post" action="{:\\think\\Request::instance()->baseUrl()}">
+        <input type="hidden" name="id" value="{$vo.id ?? ''}">
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>联系人：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="text" class="input-text" placeholder="联系人" name="username" value="{$vo.username ?? ''}"  datatype="*" nullmsg="请填写联系人">
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>联系电话：</label>
+            <div class="formControls col-xs-6 col-sm-3">
+                <input type="text" class="input-text" placeholder="联系电话" name="telephone" value="{$vo.telephone ?? ''}"  datatype="*" nullmsg="请填写联系电话">
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>详细地址：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="详细地址" name="address" value="{$vo.address ?? ''}"  datatype="*" nullmsg="请填写详细地址">
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>配送方式：</label>
+            <div class="formControls col-xs-6 col-sm-6 skin-minimal">
+                <div class="radio-box">
+                    <input type="checkbox" name="delivery[]" id="delivery-0" value="O2O" datatype="*" nullmsg="请选择配送方式">
+                    <label for="delivery-0">到店自提</label>
+                </div>
+                <div class="radio-box">
+                    <input type="checkbox" name="delivery[]" id="delivery-1" value="EXPRESS" datatype="*" nullmsg="请选择配送方式">
+                    <label for="delivery-1">快递配送</label>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl" id="open_time" style="display: none">
+            <label class="form-label col-xs-3 col-sm-3">营业时间：</label>
+            <div class="formControls col-xs-6 col-sm-3" style="width:240px;">
+                <input type="text" class="input-text Wdate" placeholder="营业开始时间" name="open_time" value="{$vo.open_time ?? ''}" {literal} onfocus="WdatePicker({dateFmt:'HH:mm'})" {/literal} >
+                <input type="text" class="input-text Wdate" placeholder="营业结束时间" name="close_time" value="{$vo.close_time ?? ''}" {literal} onfocus="WdatePicker({dateFmt:'HH:mm'})" {/literal} >
+            </div>
+            <div class="col-xs-3 col-sm-3"><span class="tips">到店自提的用户可根据营业时间来提取产品</span></div>
+        </div>
+        <div class="row cl" id="express_radio" style="display: none">
+            <label class="form-label col-xs-3 col-sm-3">快递费用：</label>
+            <div class="formControls col-xs-6 col-sm-6 skin-minimal">
+                <div class="radio-box">
+                    <input type="radio" name="express" id="express-0" value="FREE">
+                    <label for="express-0">全场包邮</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" name="express" id="express-1" value="FEE">
+                    <label for="express-1">统一邮费</label>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl" id="express_fee" style="display: none">
+            <label class="form-label col-xs-3 col-sm-3">统一邮费：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="统一邮费" name="express_fee" value="{$vo.express_fee ?? ''}" style="width:120px;">
+                <span class="tips">各个地区统一邮费</span>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl" id="integral_used" style="display: none">
+            <label class="form-label col-xs-3 col-sm-3">开启积分抵扣邮费：</label>
+            <div class="formControls col-xs-6 col-sm-6 skin-minimal">
+                <div class="radio-box">
+                    <input type="radio" name="express_integral" id="express_integral-0" value="Y">
+                    <label for="express_integral-0">开启</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" name="express_integral" id="express_integral-1" value="N">
+                    <label for="express_integral-1">关闭</label>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl" id="how_integral" style="display: none">
+            <label class="form-label col-xs-3 col-sm-3">多少积分抵扣1元邮费：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="number" class="input-text" placeholder="多少积分抵扣1元邮费" name="integral_yuan" value="{$vo.integral_yuan ?? '100'}" >
+                <span class="tips">开启积分抵扣邮费后，设置多少积分可抵扣一元邮费</span>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">备注：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="备注" name="remark" value="{$vo.remark ?? ''}" >
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <button type="submit" class="btn btn-primary radius">&nbsp;&nbsp;提交&nbsp;&nbsp;</button>
+                <button type="button" class="btn btn-default radius ml-20" onClick="layer_close();">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+{block name="script"}
+<script type="text/javascript" src="__LIB__/Validform/5.3.2/Validform.min.js"></script>
+<script type="text/javascript" src="__LIB__/My97DatePicker/WdatePicker.js"></script>
+<script>
+    $(function () {
+        var open_time = $('#open_time'),
+            express_radio = $('#express_radio'),
+            express_fee = $('#express_fee'),
+            integral_used = $('#integral_used'),
+            how_integral = $('#how_integral');
+        var checks = "{$vo.delivery ?? ''}".split(",");
+        $("[name='express'][value='{$vo.express ?? 'FREE'}']").prop("checked", true);
+        $("[name='express_integral'][value='{$vo.express_integral ?? 'Y'}']").prop("checked", true);
+
+        if (checks.length > 0){
+            for (var i in checks){
+                $("[name='delivery[]'][value='"+checks[i]+"']").prop("checked", true);
+            }
+            // 到店自提
+            if ($("[name='delivery[]'][value='O2O']").is(':checked')) {
+                open_time.show();
+            }
+
+            // 快递
+            if ($("[name='delivery[]'][value='EXPRESS']").is(':checked')) {
+                express_radio.show();
+
+                if ($("[name='express'][value='FEE']").is(':checked')) {
+                    express_fee.show();
+                    integral_used.show();
+
+                    if ($("[name='express_integral'][value='Y']").is(':checked')) {
+                        how_integral.show();
+                    }
+                }
+            }
+        }
+
+
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        // 初始化
+
+        $("[name='delivery[]']").on('change', function () {
+            if ($(this).is(':checked')) {
+                if ($(this).val() === 'O2O') {
+                    open_time.show();
+                } else {
+                    express_radio.show();
+                    if ($("[name='express'][value='FEE']").is(':checked')) {
+                        express_fee.show();
+                        integral_used.show();
+
+                        if ($("[name='express_integral'][value='Y']").is(':checked')) {
+                            how_integral.show();
+                        }
+                    }
+                }
+            } else {
+                if ($(this).val() === 'O2O') {
+                    open_time.hide();
+                } else {
+                    express_radio.hide();
+                    express_fee.hide();
+                    integral_used.hide();
+                    how_integral.hide();
+                }
+            }
+        });
+
+        $("[name='express']").on('change', function () {
+            if ($(this).is(':checked')) {
+                if ($(this).val() === 'FEE') {
+                    express_fee.show();
+                    integral_used.show();
+                    if ($("[name='express_integral'][value='Y']").is(':checked')) {
+                        how_integral.show();
+                    }
+                } else {
+                    express_fee.hide();
+                    integral_used.hide();
+                    how_integral.hide();
+                }
+            }
+        });
+
+        $("[name='express_integral']").on('change', function () {
+            if ($(this).is(':checked')) {
+                if ($(this).val() ==='Y') {
+                    how_integral.show();
+                } else {
+                    how_integral.hide();
+                }
+            }
+        });
+
+        $("#form").Validform({
+            tiptype: 2,
+            ajaxPost: true,
+            showAllError: true,
+            callback: function (ret){
+                ajax_progress(ret);
+            }
+        });
+    });
+</script>
+{/block}

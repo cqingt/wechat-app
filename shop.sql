@@ -74,6 +74,7 @@ create table tp_order(
     express varchar(32) not null DEFAULT '' comment '快递',
     express_no VARCHAR(32) not null DEFAULT '' comment '快递单号',
     express_json varchar(2048) not NULL DEFAULT '' comment '物流信息',
+    integral int not null DEFAULT '0' comment '积分',
     enabled enum('Y','N') not null default 'Y' comment '是否可用，默认是',
     create_time int not null default '0' comment '创建时间',
     update_time int not null default '0' comment '修改时间'
@@ -159,6 +160,7 @@ create table tp_cart(
 
 create table tp_user(
     id int not null primary key auto_increment,
+    integral int not null DEFAULT '0' comment '积分',
     username varchar(32) not null DEFAULT '' comment '用户名' ,
     openid varchar(64) not NULL  DEFAULT  '' comment '用户标识',
     unionid varchar(64) not NULL  DEFAULT  '' comment '用户unionid',
@@ -214,19 +216,25 @@ create table tp_consume_log(
     update_time int not null default '0' comment '修改时间'
 )engine=innodb default charset='utf8' comment='消费日志';
 
-create table tp_company_address(
+create table tp_company_config(
     id int not null primary key auto_increment,
     username varchar(64) not null DEFAULT '' comment '联系人',
     telephone char(11) not NULL DEFAULT '' comment '联系电话',
     address varchar(255) not null default '' comment '详细地址',
+    delivery varchar(255) not NULL DEFAULT '' comment '配送方式：express快递，O2O 到店自提 逗号拼接',
+    express enum('FREE', 'FEE') NOT NULL  DEFAULT 'FREE' comment '快递费用：包邮，固定邮费',
+    open_time varchar(255) not NULL  DEFAULT '' comment '到店自提：营业开始时间',
+    close_time varchar(255) not NULL  DEFAULT '' comment '到店自提：营业结束时间',
+    express_fee decimal(10,2) not NULL DEFAULT '0' comment '固定邮费金额',
+    express_integral enum('Y', 'N') not NULL DEFAULT 'N' comment '是否启动积分抵扣邮费',
+    integral_yuan int not NULL DEFAULT '100' comment '多少积分抵扣1元邮费',
     remark varchar(255) not null default '' comment '其他说明',
     create_time int not null default '0' comment '创建时间',
     update_time int not null default '0' comment '修改时间'
-)engine=innodb default charset='utf8' comment='退款地址';
+)engine=innodb default charset='utf8' comment='公司';
 
-// 开启到店自提，开启快递|  到店自提地址，电话，联系人，营业时间
-
-INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('1', 'EXPRESS', 'FREE', '运费：FREE免邮，FIXED固定邮费，', 'Y', '1517499545', '1517499545');
-INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('2', 'EXPRESS_FEE', '12', '固定邮费金额', 'Y', '1517499545', '1517499545');
-INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('3', 'EXPRESS_USE_INTEGRAL', 'YES', '开启积分抵扣邮费', 'Y', '1517499545', '1517499545');
-INSERT INTO `wechat-app`.`tp_config` (`id`, `keyword`, `value`, `remark`, `enabled`, `create_time`, `update_time`) VALUES ('4', 'HOW_INTEGRAL', '100', '多少积分抵扣一元邮费', 'Y', '1517499545', '1517499545');
+INSERT INTO `wechat-app`.`tp_admin_node` (`id`, `pid`, `group_id`, `name`, `title`, `remark`, `level`, `type`, `sort`, `status`, `isdelete`) VALUES ('71', '1', '5', 'ProductComment', '用户评价', '', '2', '1', '50', '1', '0');
+INSERT INTO `wechat-app`.`tp_admin_node` (`id`, `pid`, `group_id`, `name`, `title`, `remark`, `level`, `type`, `sort`, `status`, `isdelete`) VALUES ('72', '1', '1', 'CompanyAccount', '账户管理', '', '2', '1', '50', '1', '0');
+INSERT INTO `wechat-app`.`tp_admin_node` (`id`, `pid`, `group_id`, `name`, `title`, `remark`, `level`, `type`, `sort`, `status`, `isdelete`) VALUES ('73', '1', '1', 'ConsumeLog', '消费记录', '', '2', '1', '50', '1', '0');
+INSERT INTO `wechat-app`.`tp_admin_node` (`id`, `pid`, `group_id`, `name`, `title`, `remark`, `level`, `type`, `sort`, `status`, `isdelete`) VALUES ('74', '1', '1', 'CompanyAddress', '退货信息', '', '2', '1', '50', '1', '0');
+INSERT INTO `wechat-app`.`tp_admin_node` (`id`, `pid`, `group_id`, `name`, `title`, `remark`, `level`, `type`, `sort`, `status`, `isdelete`) VALUES ('75', '1', '1', 'CompanyConfig', '下单配置', '', '2', '1', '50', '1', '0');
