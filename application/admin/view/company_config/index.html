@@ -1,0 +1,91 @@
+{extend name="template/base" /}
+{block name="content"}
+<div class="page-container">
+    
+    <div class="cl pd-5 bg-1 bk-gray">
+        <span class="l">
+            {tp:menu menu="add" /}
+        </span>
+        <span class="r pt-5 pr-5">
+            共有数据 ：<strong>{$count ?? '0'}</strong> 条
+        </span>
+    </div>
+    <table class="table table-border table-bordered table-hover table-bg mt-20">
+        <thead>
+        <tr class="text-c">
+            <th width="25"><input type="checkbox"></th>
+            <th width="">联系人</th>
+            <th width="">联系电话</th>
+            <th width="">详细地址</th>
+            <th width="">配送方式</th>
+            <th width="">营业时间</th>
+            <th width="60">快递费用</th>
+            <th width="80">统一邮费(元)</th>
+            <th width="110">开启积分抵扣邮费</th>
+            <th width="120">多少积分抵扣1元邮费</th>
+            <th width="">备注</th>
+            <th width="70">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr class="text-c">
+            <td><input type="checkbox" name="id[]" value="{$vo.id}"></td>
+            <td>{$vo.username}</td>
+            <td>{$vo.telephone}</td>
+            <td>{$vo.address}</td>
+            <td>
+                {if condition="stripos($vo.delivery,'EXPRESS') !== false"}
+                <a href="javascript:;" class="btn btn-primary radius">快递</a>
+                {/if}
+                {if condition="stripos($vo.delivery,'O2O') !== false"}
+                <a href="javascript:;" class="btn btn-primary radius">到店自提</a>
+                {/if}
+            </td>
+            <td>
+                {if condition="stripos($vo.delivery,'O2O') !== false"}
+                {$vo.open_time} - {$vo.close_time}
+                {else /}
+                --
+                {/if}
+            </td>
+            <td>
+                {if condition="stripos($vo.delivery,'EXPRESS') !== false"}
+                {$vo.express == 'FREE' ? '<a href="javascript:;" class="btn btn-primary radius">全场免邮</a>' : '<a href="javascript:;" class="btn btn-primary radius">统一邮费</a>'}
+                {else /}
+                --
+                {/if}
+            </td>
+            <td>
+                {if condition="stripos($vo.delivery,'EXPRESS') !== false && $vo.express == 'FEE'"}
+                {$vo.express_fee}
+                {else /}
+                --
+                {/if}
+            </td>
+            <td>
+                {if condition="stripos($vo.delivery,'EXPRESS') !== false && $vo.express == 'FEE'"}
+                {$vo.express_integral == 'Y' ? '开启' : '未开启'}
+                {else /}
+                --
+                {/if}
+            </td>
+            <td>
+                {if condition="stripos($vo.delivery,'EXPRESS') !== false && $vo.express == 'FEE' && $vo.express_integral == 'Y'"}
+                {$vo.integral_yuan}
+                {else /}
+                --
+                {/if}
+                </td>
+            <td>{$vo.remark}</td>
+            <td class="f-14">
+                {tp:menu menu='myedit' /}
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="page-bootstrap">{$page ?? ''}</div>
+</div>
+{/block}
+
