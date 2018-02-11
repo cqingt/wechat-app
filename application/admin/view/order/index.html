@@ -2,7 +2,7 @@
 {block name="content"}
 <div class="page-container">
     {include file='form' /}
-    <div class="cl pd-5 bg-1 bk-gray">
+    <div class="cl pd-5 bg-1 bk-gray" style="display: none">
         <span class="l">
             <!--{tp:menu menu="add" /}-->
         </span>
@@ -13,7 +13,7 @@
     <table class="table table-border table-bordered table-hover table-bg mt-20">
         <thead>
         <tr class="text-c">
-            <th width="25"><input type="checkbox"></th>
+            <!--<th width="25"><input type="checkbox"></th>-->
             <th width="">订单号</th>
             <th width="">订单状态</th>
             <th width="">买家姓名</th>
@@ -28,7 +28,7 @@
         <tbody>
         {volist name="list" id="vo"}
         <tr class="text-c">
-            <td><input type="checkbox" name="id[]" value="{$vo.id}"></td>
+            <!--<td><input type="checkbox" name="id[]" value="{$vo.id}"></td>-->
             <td>{$vo.order_sn|high_light=$Request.param.order_sn}</td>
             <td>{$status[$vo.status]}</td>
             <td>{$vo.username}</td>
