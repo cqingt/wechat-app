@@ -8,6 +8,7 @@
     <p>上次登录IP：{$last_login_ip} &nbsp;&nbsp;&nbsp; 上次登录时间：{$Think.session.last_login_time|date='Y-m-d H:i:s',###} &nbsp;&nbsp;&nbsp; 上次登录地点：{$last_login_loc}</p>
     {/if}
     <p>本次登录IP：{$current_login_ip} &nbsp;&nbsp;&nbsp; 本次登录时间：{$info.last_login_time|date='Y-m-d H:i:s',###} &nbsp;&nbsp;&nbsp; 本次登录地点：{$current_login_loc}</p>
+    <!--<p>提醒：部分统计信息有10-15分钟的延迟</p>-->
     <table class="table table-border table-bordered table-bg">
         <thead>
         <tr>
@@ -25,43 +26,59 @@
         <tbody>
         <tr class="text-c">
             <td>总数</td>
-            <td>92</td>
-            <td>9</td>
-            <td>0</td>
-            <td>8</td>
-            <td>20</td>
+            <td>{$amount['total']}</td><!--营收(元)-->
+            <td>{$user['total']}</td><!--用户数-->
+            <td>{$product['total']}</td><!--产品数-->
+            <td>{$order['total']}</td><!--订单数-->
+            <td>{$todo['total']}</td><!--待处理-->
         </tr>
         <tr class="text-c">
             <td>今日</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td>{$amount['today']}</td>
+            <td>{$user['today']}</td>
+            <td>{$product['today']}</td>
+            <td>{$order['today']}</td>
+            <td>{$todo['today']}</td>
         </tr>
         <tr class="text-c">
             <td>昨日</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td>{$amount['yesterday']}</td>
+            <td>{$user['yesterday']}</td>
+            <td>{$product['yesterday']}</td>
+            <td>{$order['yesterday']}</td>
+            <td>{$todo['yesterday']}</td>
         </tr>
         <tr class="text-c">
             <td>本周</td>
-            <td>2</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td>{$amount['current_week']}</td>
+            <td>{$user['current_week']}</td>
+            <td>{$product['current_week']}</td>
+            <td>{$order['current_week']}</td>
+            <td>{$todo['current_week']}</td>
+        </tr>
+        <tr class="text-c">
+            <td>上周</td>
+            <td>{$amount['last_week']}</td>
+            <td>{$user['last_week']}</td>
+            <td>{$product['last_week']}</td>
+            <td>{$order['last_week']}</td>
+            <td>{$todo['last_week']}</td>
         </tr>
         <tr class="text-c">
             <td>本月</td>
-            <td>2</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td>{$amount['current_month']}</td>
+            <td>{$user['current_month']}</td>
+            <td>{$product['current_month']}</td>
+            <td>{$order['current_month']}</td>
+            <td>{$todo['current_month']}</td>
+        </tr>
+        <tr class="text-c">
+            <td>上月</td>
+            <td>{$amount['last_month']}</td>
+            <td>{$user['last_month']}</td>
+            <td>{$product['last_month']}</td>
+            <td>{$order['last_month']}</td>
+            <td>{$todo['last_month']}</td>
         </tr>
         </tbody>
     </table>

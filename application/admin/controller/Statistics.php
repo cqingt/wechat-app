@@ -8,6 +8,8 @@
 namespace app\admin\controller;
 
 use app\admin\Controller;
+use library\Tool;
+use think\Cache;
 
 class Statistics extends Controller
 {
@@ -24,6 +26,18 @@ class Statistics extends Controller
 
     public function index()
     {
+        for ($year = 2018; $year <= 2025; $year++) {
+            $years[$year] = $year;
+        }
+
+        for ($month = 1; $month <= 12; $month++) {
+            $months[$month] = $month ;
+        }
+
+        $this->view->assign('year', date('Y'));
+        $this->view->assign('month', date('m'));
+        $this->view->assign('years', $years);
+        $this->view->assign('months', $months);
         return $this->view->fetch();
     }
 
@@ -33,22 +47,24 @@ class Statistics extends Controller
         $month = request()->get('month', 0, 'int');
         $dates = $this->getDateBetween($year, $month);
         $total = count($dates);
+        $yearMonth = $year . ($month > 9 ?: '0' . $month);
 
         $data = [
-            'dates' => $dates,
-            'users' => $this->getUsers($total),
-            'amounts' => $this->getAmounts($total),
-            'products' => $this->getProducts($total),
-            'orders' => $this->getOrders($total),
+            'dates'    => $dates,
+            'users'    => $this->getCacheData('user', $total, $yearMonth),
+            'amounts'  => $this->getCacheData('amount', $total, $yearMonth),
+            'products' => $this->getCacheData('product', $total, $yearMonth),
+            'orders'   => $this->getCacheData('order', $total, $yearMonth),
         ];
 
         return ajax_return($data);
     }
 
+    // 获取时间范围
     public function getDateBetween($year, $month)
     {
-        $date = implode('-', [$year, $month, '01']);
-        $total = date('d', strtotime($date . ' +1 month -1 day'));
+        $date = implode('-', [$year, $month, '01']); // 当前选择的月
+        $total = date('d', strtotime($date . ' +1 month -1 day')); // 当前月的下一月
         $dates = [];
 
         for ($i = 1; $i <= $total; $i++) {
@@ -58,39 +74,14 @@ class Statistics extends Controller
         return $dates;
     }
 
-    public function getUsers($total)
+    // 缓存中取数据
+    public function getCacheData($prefix, $total, $yearMonth)
     {
-        $users = [];
+        $result = [];
         for ($i = 1; $i <= $total; $i++) {
-            $users[] =  rand(100, 199);
+            $day = $i > 9 ?: '0' . $i;
+            $result[] =  Cache::get("{$prefix}_{$yearMonth}{$day}", rand(10, 99));
         }
-        return $users;
-    }
-
-    public function getAmounts($total)
-    {
-        $amounts = [];
-        for ($i = 1; $i <= $total; $i++) {
-            $amounts[] =  rand(200, 999) + rand();
-        }
-        return $amounts;
-    }
-
-    public function getProducts($total)
-    {
-        $products = [];
-        for ($i = 1; $i <= $total; $i++) {
-            $products[] =  rand(10, 29);
-        }
-        return $products;
-    }
-
-    public function getOrders($total)
-    {
-        $orders = [];
-        for ($i = 1; $i <= $total; $i++) {
-            $orders[] =  rand(10, 99);
-        }
-        return $orders;
+        return $result;
     }
 }

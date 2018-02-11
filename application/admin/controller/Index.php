@@ -15,6 +15,8 @@
 namespace app\admin\controller;
 
 use app\admin\Controller;
+use library\Tool;
+use think\Cache;
 use think\Loader;
 use think\Session;
 use think\Db;
@@ -82,16 +84,32 @@ class Index extends Controller
         // 查询个人信息
         $info = Db::name("AdminUser")->where("id", UID)->find();
         $this->view->assign("info", $info);
-$this->orderCount();
+
+        // 数据统计
+        $this->view->assign("order", $this->getStatistics('order'));
+        $this->view->assign("amount", $this->getStatistics('amount'));
+        $this->view->assign("user", $this->getStatistics('user'));
+        $this->view->assign("product", $this->getStatistics('product'));
+        $this->view->assign("todo", $this->getStatistics('todo'));
+
         return $this->view->fetch();
     }
 
-    // 订单统计
-    public function orderCount()
+    // 统计信息，从缓存中取
+    public function getStatistics($prefix)
     {
-        $total = $this->getModel('order')->countOrder();
-        print_r($total);exit;
+        return [
+            'total'         => $this->getCacheByKey($prefix, 'total'),
+            'today'         => $this->getCacheByKey($prefix, 'today'),
+            'yesterday'     => $this->getCacheByKey($prefix, 'yesterday'),
+            'current_week'  => $this->getCacheByKey($prefix, 'current_week'),
+            'last_week'     => $this->getCacheByKey($prefix, 'last_week'),
+            'current_month' => $this->getCacheByKey($prefix, 'current_month'),
+            'last_month'    => $this->getCacheByKey($prefix, 'last_month')
+        ];
     }
 
-
+    public function getCacheByKey($prefix, $type) {
+        return Cache::get(Tool::getCacheKey($prefix, $type), 0);
+    }
 }

@@ -3,34 +3,23 @@
 {block name="content"}
 <script src="https://cdn.bootcss.com/echarts/4.0.0/echarts.min.js"></script>
 <div class="page-container">
-    <div><center><h2 class="title">2018年3月数据趋势图</h2></center></div>
+    <div><center><h2 class="title">{$year}年{$month}月数据趋势图</h2></center></div>
     <div class="date col-sm-4" style="margin-right: 0;float: right;text-align:right;">
         <div class="col-sm-5 pull-right">
             <div class="select-box ">
                 <select name="year" id="year" class="select">
-                    <option value="2018">2018年</option>
-                    <option value="2019">2019年</option>
-                    <option value="2020">2020年</option>
-                    <option value="2021">2021年</option>
-                    <option value="2022">2022年</option>
+                    {foreach $years as $item}
+                    <option value="{$item}" {if condition="$item == $year"} selected {/if}>{$item}年</option>
+                    {/foreach}
                 </select>
             </div>
         </div>
         <div class="col-sm-5">
             <div class="select-box ">
                 <select name="month" id="month" class="select">
-                    <option value="1">1月</option>
-                    <option value="2">2月</option>
-                    <option value="3">3月</option>
-                    <option value="4">4月</option>
-                    <option value="5">5月</option>
-                    <option value="6">6月</option>
-                    <option value="7">7月</option>
-                    <option value="8">8月</option>
-                    <option value="9">9月</option>
-                    <option value="10">10月</option>
-                    <option value="11">11月</option>
-                    <option value="12">12月</option>
+                    {foreach $months as $item}
+                    <option value="{$item}" {if condition="$item == $month"} selected {/if}>{$item}月</option>
+                    {/foreach}
                 </select>
             </div>
         </div>
@@ -257,12 +246,7 @@
     };
     userChart.setOption(userOption);
 
-    $('#year').on('change', function () {
-        setTitle();
-        setOptions();
-    });
-
-    $('#month').on('change', function () {
+    $('#year,#month').on('change', function () {
         setTitle();
         setOptions();
     });
@@ -283,7 +267,7 @@
             }
         });
     }
-
+    setOptions();
     function setTitle() {
         var year = $('#year').val();
         var month = $('#month').val();
@@ -322,7 +306,7 @@
     }
 
     function setProduct(data) {
-        amountChart.setOption({
+        productChart.setOption({
             xAxis: {
                 data: data.dates
             },
@@ -337,7 +321,7 @@
     }
 
     function setUser(data) {
-        amountChart.setOption({
+        userChart.setOption({
             xAxis: {
                 data: data.dates
             },
