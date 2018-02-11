@@ -5,6 +5,7 @@
  * Date: 2018/2/11
  * Time: 17:09
  */
+
 namespace app\api\controller;
 
 class App extends BaseController
@@ -14,70 +15,32 @@ class App extends BaseController
     {
         $map = [
             [
-                'form_data' => [
-                    'description' => '模版',
-                    'type' => 0,
-                    'delivery_id' => 0,
-                    'id' => 3265413,
-                    'title' => '草莓味酸奶',
-                    'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'price' => 999.00,
-                    'sale_price' => 0.00,
-                    'category' => ['0' => '速食冻品'],
-                    'sales' => 1,
-                    'is_recommend' => 0,
-                    'stock' => 999998,
-                    'weight' => 0,
-                    'goods_type' => 0,
-                    'max_can_use_integral' => 0,
-                    'integral' => -1,
-                    'mass' => 0.000,
-                    'volume' => 0.000,
-                    'express_rule_id' => 0,
-                    'is_seckill' => 2,
-                    'seckill_status' => 2,
-                    'virtual_price' => 0.00,
-                    'add_time' => 1517474453,
-                    'update_time' => '2018.02.01',
-                    'viewed_count' => 0,
-                    'status' => 0,
-                    'category_id' => ['0' => 779112],
-                    'server_time' => 1517751680,
-                    'is_group_buy' => 0,
-                ]
+                'id' => 3265413,
+                'title' => '草莓味酸奶',
+                'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                'price' => 999.00,
+                'sale_price' => 0.00,
+                'category' => ['速食冻品'],
+                'category_id' => [779112],
+                'sales' => 1,
+                'is_recommend' => 0,
+                'stock' => 999998,
+                'virtual_price' => 0.00,
+                'status' => 0
             ],
             [
-                'form_data' => [
-                    'description' => '模版',
-                    'type' => 0,
-                    'delivery_id' => 0,
-                    'id' => 3265412,
-                    'title' => '鸡脆骨,',
-                    'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939487658c65cbc7b22b.png',
-                    'price' => 999.00,
-                    'sale_price' => 0.00,
-                    'category' => ['0' => '家禽蛋类'],
-                    'sales' => 0,
-                    'is_recommend' => 0,
-                    'stock' => 999999,
-                    'weight' => 0,
-                    'goods_type' => 0,
-                    'max_can_use_integral' => 0,
-                    'integral' => -1,
-                    'mass' => 0.000,
-                    'volume' => 0.000,
-                    'express_rule_id' => 0,
-                    'is_seckill' => 2,
-                    'seckill_status' => 2,
-                    'virtual_price' => 0.00,
-                    'add_time' => 1517474453,
-                    'update_time' => '2018.02.01',
-                    'viewed_count' => 0,
-                    'status' => 0,
-                    'category_id' => ['0' => 779110],
-                    'server_time' => 1517751680,
-                    'is_group_buy' => 0,
-                ]
+                'id' => 3265412,
+                'title' => '鸡脆骨,',
+                'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939487658c65cbc7b22b.png',
+                'price' => 999.00,
+                'sale_price' => 0.00,
+                'category' => ['家禽蛋类'],
+                'category_id' => [779110],
+                'sales' => 0,
+                'is_recommend' => 0,
+                'stock' => 999999,
+                'virtual_price' => 0.00,
+                'status' => 0,
             ],
         ];
         for ($i = 0; $i < 20; $i++) {
