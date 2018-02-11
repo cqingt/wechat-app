@@ -11,6 +11,6 @@ class Index extends BaseController
 {
     public function index()
     {
-        echo json_encode(['code' => 200, 'msg' => 'success']);
+        return ['code' => 200, 'msg' => 'success'];
     }
 }
