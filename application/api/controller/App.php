@@ -7,7 +7,7 @@
  */
 namespace app\api\controller;
 
-class AppShop extends BaseController
+class App extends BaseController
 {
 
     public function getGoodsList()
