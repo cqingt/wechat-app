@@ -9,4 +9,9 @@ class Order extends Model
     protected $name = 'order';
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
+
+    public function countOrder($condition = [])
+    {
+        return $this->where(['status' => ['GT', 0]])->where($condition)->count();
+    }
 }

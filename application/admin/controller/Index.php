@@ -29,7 +29,7 @@ class Index extends Controller
 
         // 节点转为树
         $tree_node = list_to_tree($nodes);
-//dump($tree_node);exit;
+
         // 显示菜单项
         $menu = [];
         $groups_id = [];
@@ -82,7 +82,16 @@ class Index extends Controller
         // 查询个人信息
         $info = Db::name("AdminUser")->where("id", UID)->find();
         $this->view->assign("info", $info);
-
+$this->orderCount();
         return $this->view->fetch();
     }
+
+    // 订单统计
+    public function orderCount()
+    {
+        $total = $this->getModel('order')->countOrder();
+        print_r($total);exit;
+    }
+
+
 }
