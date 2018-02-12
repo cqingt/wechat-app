@@ -469,18 +469,9 @@ class App extends BaseController
                     'name' => '张无忌',
                     'contact' => 13326250250,
                     'detailAddress' => '楼下那家收破烂的',
-                    'province' => [
-                        'text' => '青海省',
-                        'id' => 29
-                    ],
-                    'city' => [
-                        'text' => '玉树藏族自治州',
-                        'id' => 352
-                    ],
-                    'district' => [
-                        'text' => '囊谦县',
-                        'id' => 3119
-                    ]
+                    'province' => '青海省',
+                    'city' =>  '玉树藏族自治州',
+                    'district' => '囊谦县',
                 ],
                 'is_default' => 1,
                 'telphone' => 13326250250,
@@ -493,18 +484,9 @@ class App extends BaseController
                     'name' => '张无忌',
                     'contact' => 13326250250,
                     'detailAddress' => '楼下那家收破烂的',
-                    'province' => [
-                        'text' => '青海省',
-                        'id' => 29
-                    ],
-                    'city' => [
-                        'text' => '玉树藏族自治州',
-                        'id' => 352
-                    ],
-                    'district' => [
-                        'text' => '囊谦县',
-                        'id' => 3119
-                    ]
+                    'province' => '青海省',
+                    'city' =>  '玉树藏族自治州',
+                    'district' => '囊谦县',
                 ],
                 'is_default' => 0,
                 'telphone' => 13326250250,
