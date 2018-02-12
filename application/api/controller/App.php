@@ -297,7 +297,7 @@ class App extends BaseController
                 'detailAddress' => '楼下那家收破烂的',
                 'province' => '青海省',
                 'city' => '玉树藏族自治州',
-                'district' =>  '囊谦县',
+                'district' => '囊谦县',
                 'address_id' => 11
             ],
             'buyer_info' => [
@@ -354,65 +354,51 @@ class App extends BaseController
     {
         $type = ['1' => '站内消息', '2' => '支付消息', 3 => '表单消息', 4 => '评论消息', 8 => '管理员通知'];
         $data = [
-            5 => [
-                'data' => [
-                    [
-                        'type' => 1,
-                        'content' => json_encode([
-                            'title' => '订单状态变更',
-                            'description' => '您的订单已经发货',
-                            'pic' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                        ]),
-                        'add_time' => date('Y-m-d H:i'),
-                        'page_url' => ''
-                    ],
-                    [
-                        'type' => 2,
-                        'content' => json_encode([
-                            'order_id' => date('YmdHis'),
-                            'total_price' => '22.50',
-                        ]),
-                        'add_time' => date('Y-m-d H:i'),
-                        'page_url' => ''
-                    ],
-                    [
-                        'type' => 3,
-                        'sub_id' => 3,
-                        'content' => json_encode([
-                            'form_name' => 'order',
-                            'form_id' => '22',
-                            'form' => ''
-                        ]),
-                        'add_time' => date('Y-m-d H:i'),
-                        'page_url' => ''
-                    ],
-                    [
-                        'type' => 4,
-                        'content' => '店长',
-                        'add_time' => date('Y-m-d H:i'),
-                    ],
-                    [
-                        'type' => 8,
-                        'content' => '请确认收货',
-                        'add_time' => date('Y-m-d H:i'),
-                    ]
+            'messageList' => [
+                [
+                    'type' => 1,
+                    'content' => json_encode([
+                        'title' => '订单状态变更',
+                        'description' => '您的订单已经发货',
+                        'pic' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                    ]),
+                    'add_time' => date('Y-m-d H:i'),
+                    'page_url' => '',
                 ],
-                'is_more' => 0,
-                'current_page' => 1,
-                'unread_count' => 3,
+                [
+                    'type' => 2,
+                    'content' => json_encode([
+                        'order_id' => date('YmdHis'),
+                        'total_price' => '22.50',
+                    ]),
+                    'add_time' => date('Y-m-d H:i'),
+                    'page_url' => ''
+                ],
+                [
+                    'type' => 3,
+                    'sub_id' => 3,
+                    'content' => json_encode([
+                        'form_name' => 'order',
+                        'form_id' => '22',
+                        'form' => ''
+                    ]),
+                    'add_time' => date('Y-m-d H:i'),
+                    'page_url' => ''
+                ],
+                [
+                    'type' => 4,
+                    'content' => '店长',
+                    'add_time' => date('Y-m-d H:i'),
+                ],
+                [
+                    'type' => 8,
+                    'content' => '请确认收货',
+                    'add_time' => date('Y-m-d H:i'),
+                ]
             ],
-            6 => [
-                'data' => [
-                    [
-                        'type' => 4,
-                        'content' => '店长说话了',
-                        'add_time' => date('Y-m-d H:i'),
-                    ]
-                ],
-                'is_more' => 0,
-                'current_page' => 1,
-                'unread_count' => 3,
-            ]
+            'is_more' => 0,
+            'current_page' => 1,
+            'unread_count' => 3
         ];
 
         return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
@@ -470,7 +456,7 @@ class App extends BaseController
                     'contact' => 13326250250,
                     'detailAddress' => '楼下那家收破烂的',
                     'province' => '青海省',
-                    'city' =>  '玉树藏族自治州',
+                    'city' => '玉树藏族自治州',
                     'district' => '囊谦县',
                 ],
                 'is_default' => 1,
@@ -485,7 +471,7 @@ class App extends BaseController
                     'contact' => 13326250250,
                     'detailAddress' => '楼下那家收破烂的',
                     'province' => '青海省',
-                    'city' =>  '玉树藏族自治州',
+                    'city' => '玉树藏族自治州',
                     'district' => '囊谦县',
                 ],
                 'is_default' => 0,
