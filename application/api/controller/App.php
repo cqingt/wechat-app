@@ -53,67 +53,74 @@ class App extends BaseController
     public function getGoods()
     {
         $data = [
-            [
-                'form_data' => [
-                    'description' => '模版',
-                    'type' => 0,
-                    'delivery_id' => 0,
-                    'id' => 3265413,
-                    'title' => '草莓味酸奶',
-                    'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'price' => 999.00,
-                    'sale_price' => 0.00,
-                    'category' => ['0' => '速食冻品'],
-                    'sales' => 1,
-                    'is_recommend' => 0,
-                    'stock' => 999998,
-                    'weight' => 0,
-                    'goods_type' => 0,
-                    'max_can_use_integral' => 0,
-                    'integral' => -1,
-                    'mass' => 0.000,
-                    'volume' => 0.000,
-                    'express_rule_id' => 0,
-                    'is_seckill' => 2,
-                    'seckill_status' => 2,
-                    'virtual_price' => 0.00,
-                    'add_time' => 1517474453,
-                    'update_time' => 1517474453,
-                    'viewed_count' => 0,
-                    'category_id' => ['0' => 779112],
-                    'model_items' => [
-                        [
-                            'id' => 2,
-                            'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                            'price' => 33,
-                            'stock' => 23,
-                            'virtual_price' => 35
-                        ],
-                        [
-                            'id' => 3,
-                            'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                            'price' => 33,
-                            'stock' => 23,
-                            'virtual_price' => 35
-                        ],
-
-                    ],
-                    'express_fee' => '包邮',
-                    'server_time' => 1517751630,
-                    'is_group_buy_goods' => 0,
-                    'model' => [
-                        [
-                            "name" => "尺寸",
-                            "subModelId" => [1, 2, 3, 4],
-                            "subModelName" => ["40白色", "41红色", "42蓝绿", "43韭黄"]
-                        ]
-                    ],
-                    'img_urls' => [
+            'description' => '商品详情',
+            'id' => 3265413,
+            'title' => '草莓味酸奶',
+            'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+            'price' => 999.00,
+            'sale_price' => 0.00,
+            'category' => ['速食冻品'],
+            'sales' => 1,
+            'is_recommend' => 0,
+            'stock' => 999998,
+            'virtual_price' => 0.00,
+            'category_id' => [779112],
+            'model_items' => [
+                [
+                    'id' => 1,
+                    'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                    'price' => 33,
+                    'stock' => 23,
+                    'virtual_price' => 33
+                ],
+                [
+                    'id' => 2,
+                    'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                    'price' => 33,
+                    'stock' => 23,
+                    'virtual_price' => 25
+                ],
+                [
+                    'id' => 3,
+                    'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                    'price' => 33,
+                    'stock' => 3,
+                    'virtual_price' => 45
+                ],
+                [
+                    'id' => 4,
+                    'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                    'price' => 33,
+                    'stock' => 13,
+                    'virtual_price' => 38
+                ],
+            ],
+            'express_fee' => '包邮',
+            'model' => [
+                [
+                    "name" => "尺寸",
+                    "subModelId" => [1, 2, 3, 4],
+                    "subModelName" => ["40白色", "41红色", "42蓝绿", "43韭黄"]
+                ]
+            ],
+            'img_urls' => [
+                "https://img.yzcdn.cn/upload_files/2016/11/25/FpqPXlrMRjKwJs8VdTu3ZDJCj4j5.jpeg?imageView2/2/w/200/h/200/q/90/format/jpeg",
+                "http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png"
+            ],
+            'assess_total' => 30,
+            'assess' => [
+                'buyer_headimgurl' => 'http://cdn.jisuapp.cn/zhichi_frontend/static/webapp/images/default_photo.png',
+                'buyer_nickname' => 'default',
+                'add_time' => date('Y-m-d H:i'),
+                'assess_info' => [
+                    'content' => '评论内容',
+                    'has_img' => 1,
+                    'img_arr' => [
                         "https://img.yzcdn.cn/upload_files/2016/11/25/FpqPXlrMRjKwJs8VdTu3ZDJCj4j5.jpeg?imageView2/2/w/200/h/200/q/90/format/jpeg",
                         "http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png"
                     ]
                 ]
-            ]
+            ],
         ];
 
         return ['code' => '200', 'msg' => 'success', 'data' => $data];
