@@ -409,6 +409,12 @@ class App extends BaseController
         return ['code' => '200', 'msg' => 'success', 'data' => []];
     }
 
+    // 购物车与检查
+    public function precheckShoppingCart()
+    {
+        return ['code' => '200', 'msg' => 'success', 'data' => []];
+    }
+
     // 搜索
     public function search()
     {
