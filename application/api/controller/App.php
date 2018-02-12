@@ -70,7 +70,7 @@ class App extends BaseController
                     'id' => 1,
                     'model' => '40白色',
                     'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'price' => 33,
+                    'price' => 133,
                     'stock' => 23,
                     'virtual_price' => 33
                 ],
@@ -78,7 +78,7 @@ class App extends BaseController
                     'id' => 2,
                     'model' => '41红色',
                     'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'price' => 33,
+                    'price' => 233,
                     'stock' => 23,
                     'virtual_price' => 25
                 ],
@@ -86,7 +86,7 @@ class App extends BaseController
                     'id' => 3,
                     'model' => '42蓝绿',
                     'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'price' => 33,
+                    'price' => 333,
                     'stock' => 3,
                     'virtual_price' => 45
                 ],
@@ -94,7 +94,7 @@ class App extends BaseController
                     'id' => 4,
                     'model' => '43韭黄',
                     'img_url' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'price' => 33,
+                    'price' => 433,
                     'stock' => 13,
                     'virtual_price' => 38
                 ],
