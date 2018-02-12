@@ -404,6 +404,11 @@ class App extends BaseController
         return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
     }
 
+    public function addCart()
+    {
+        return ['code' => '200', 'msg' => 'success', 'data' => []];
+    }
+
     // 搜索
     public function search()
     {
