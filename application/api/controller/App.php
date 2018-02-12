@@ -166,7 +166,7 @@ class App extends BaseController
             $data[] = $map[$i % 2];
         }
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
+        return ['code' => '200', 'msg' => 'success', 'data' => $data, 'num' => [count($data), 1, 2, 3, 4], 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
     }
 
     public function orderList()
@@ -174,134 +174,89 @@ class App extends BaseController
         $status = isset($_POST['status']) && !is_null($_POST['status']) ? (int)$_POST['status'] : intval(rand(0, 8));
         $map = [
             [
-                'form_data' => [
-                    'goods_info' => [
-                        [
-                            'goods_id' => 2,
-                            'price' => 999.00,
-                            'stock' => 99,
-                            'goods_name' => '草莓味酸奶',
-                            'module_attr' => '白色42码',
-                            'integral' => 99,
-                            'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                            'model' => '',
-                            'num' => 1,
-                        ]
-                    ],
-                    'remark' => '快点吧，黄花菜都凉了',
-                    'original_express_fee' => 0,
-                    'address_info' => [
-                        'name' => '张无忌',
-                        'contact' => 13326250250,
-                        'detailAddress' => '楼下那家收破烂的',
-                        'province' => [
-                            'text' => '青海省',
-                            'id' => 29
-                        ],
-                        'city' => [
-                            'text' => '玉树藏族自治州',
-                            'id' => 352
-                        ],
-                        'district' => [
-                            'text' => '囊谦县',
-                            'id' => 3119
-                        ],
-                        'address_id' => 114603
-                    ],
-                    'buyer_info' => [
-                        'nickname' => 59620248,
-                        'phone' => 15260983827,
-                        'message' => ''
-                    ],
-                    'original_price' => 999,
-                    'additional_info' => '',
-                    'id' => 381471,
-                    'order_id' => '5a770b8ecc6a5831434837',
-                    'buyer_id' => '12b25577c5003dd03f793f47646e2923',
-                    'payment_id' => 0,
-                    'status' => $status,
-                    'total_price' => 999.00,
-                    'add_time' => '2018-02-04 21:33:02',
-                    'payment_time' => 0,
-                    'refund_time' => 0,
-                    'goods_type' => 0,
-                    'parent_shop_app_id' => 0,
-                    'is_self_delivery' => 0,
-                    'is_group_buy_order' => 0,
-                    'appointment_time' => 0,
-                    'goods_num' => 1,
-                ]
+                'original_express_fee' => 0,
+                'original_price' => 999,
+                'additional_info' => '',
+                'id' => 381471,
+                'order_id' => '5a770b8ecc6a5831434837',
+                'payment_id' => 0,
+                'status' => $status,
+                'total_price' => 999.00,
+                'add_time' => '2018-02-04 21:33:02',
+                'payment_time' => 0,
+                'refund_time' => 0,
+                'is_self_delivery' => 0,
+                'goods_num' => 1,
+                'address_info' => [
+                    'address_id' => 11,
+                    'name' => '张无忌',
+                    'contact' => 13326250250,
+                    'detailAddress' => '楼下那家收破烂的',
+                    'province' => '青海省',
+                    'city' => '玉树藏族自治州',
+                    'district' => '囊谦县',
+                ],
+                'buyer_info' => [
+                    'nickname' => 59620248,
+                    'phone' => 15260983827,
+                    'message' => ''
+                ],
+                'goods_info' => [
+                    [
+                        'goods_id' => 2,
+                        'price' => 999.00,
+                        'stock' => 99,
+                        'goods_name' => '草莓味酸奶',
+                        'module_attr' => '白色42码',
+                        'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                        'model' => '',
+                        'num' => 1,
+                    ]
+                ],
+                'remark' => '快点吧，黄花菜都凉了',
             ],
             [
-                'form_data' => [
-                    'goods_info' => [
-                        [
-                            'goods_id' => 2,
-                            'price' => 999.00,
-                            'stock' => 99,
-                            'goods_name' => '草莓味酸奶',
-                            'module_attr' => '白色43码',
-                            'integral' => 99,
-                            'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                            'model' => '',
-                            'num' => 1,
-                        ],
-                        [
-                            'goods_id' => 3,
-                            'price' => 299.00,
-                            'stock' => 99,
-                            'goods_name' => '草莓味酸奶2',
-                            'module_attr' => '红色42码',
-                            'integral' => 99,
-                            'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                            'model' => '',
-                            'num' => 2,
-                        ]
-                    ],
-                    'remark' => '快点吧，黄花菜都凉了',
-                    'original_express_fee' => 0,
-                    'address_info' => [
-                        'name' => '张无忌',
-                        'contact' => 13326250250,
-                        'detailAddress' => '楼下那家收破烂的',
-                        'province' => [
-                            'text' => '青海省',
-                            'id' => 29
-                        ],
-                        'city' => [
-                            'text' => '玉树藏族自治州',
-                            'id' => 352
-                        ],
-                        'district' => [
-                            'text' => '囊谦县',
-                            'id' => 3119
-                        ],
-                        'address_id' => 114603
-                    ],
-                    'buyer_info' => [
-                        'nickname' => 59620248,
-                        'phone' => 15260983827,
-                        'message' => ''
-                    ],
-                    'original_price' => 999,
-                    'additional_info' => '',
-                    'id' => 381471,
-                    'order_id' => '5a770b8ecc6a5831434837',
-                    'buyer_id' => '12b25577c5003dd03f793f47646e2923',
-                    'payment_id' => 0,
-                    'status' => $status,
-                    'total_price' => 1999.00,
-                    'add_time' => '2018-02-04 21:33:02',
-                    'payment_time' => 0,
-                    'refund_time' => 0,
-                    'goods_type' => 0,
-                    'parent_shop_app_id' => 0,
-                    'is_self_delivery' => 0,
-                    'is_group_buy_order' => 0,
-                    'appointment_time' => 0,
-                    'goods_num' => 1,
-                ]
-            ]
+                'original_express_fee' => 0,
+                'original_price' => 999,
+                'additional_info' => '',
+                'id' => 381471,
+                'order_id' => '5a770b8ecc6a5831434837',
+                'payment_id' => 0,
+                'status' => $status,
+                'total_price' => 999.00,
+                'add_time' => '2018-02-04 21:33:02',
+                'payment_time' => 0,
+                'refund_time' => 0,
+                'is_self_delivery' => 0,
+                'goods_num' => 1,
+                'address_info' => [
+                    'address_id' => 11,
+                    'name' => '张无忌',
+                    'contact' => 13326250250,
+                    'detailAddress' => '楼下那家收破烂的',
+                    'province' => '青海省',
+                    'city' => '玉树藏族自治州',
+                    'district' => '囊谦县',
+                ],
+                'buyer_info' => [
+                    'nickname' => 59620248,
+                    'phone' => 15260983827,
+                    'message' => ''
+                ],
+                'goods_info' => [
+                    [
+                        'goods_id' => 2,
+                        'price' => 999.00,
+                        'stock' => 99,
+                        'goods_name' => '草莓味酸奶',
+                        'module_attr' => '白色42码',
+                        'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                        'model' => '',
+                        'num' => 1,
+                    ]
+                ],
+                'remark' => '快点吧，黄花菜都凉了',
+            ],
         ];
         for ($i = 0; $i < 20; $i++) {
             $data[] = $map[$i % 2];
@@ -313,76 +268,58 @@ class App extends BaseController
     public function getOrder()
     {
         $data = [
-            'form_data' => [
-                'goods_info' => [
-                    [
-                        'goods_id' => 2,
-                        'price' => 999.00,
-                        'stock' => 99,
-                        'goods_name' => '草莓味酸奶',
-                        'integral' => 99,
-                        'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                        'model' => '',
-                        'num' => 1,
-                    ],
-                    [
-                        'goods_id' => 3,
-                        'price' => 699.00,
-                        'stock' => 99,
-                        'goods_name' => '草莓味酸奶',
-                        'integral' => 99,
-                        'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                        'model' => '',
-                        'num' => 2,
-                    ]
+            'goods_info' => [
+                [
+                    'goods_id' => 2,
+                    'price' => 999.00,
+                    'stock' => 99,
+                    'goods_name' => '草莓味酸奶',
+                    'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                    'model' => '',
+                    'num' => 1,
                 ],
-                'remark' => '快点吧，黄花菜都凉了',
-                'original_express_fee' => 0,
-                'express_fee' => 20,
-                'address_info' => [
-                    'name' => '张无忌',
-                    'contact' => 13326250250,
-                    'detailAddress' => '楼下那家收破烂的',
-                    'province' => [
-                        'text' => '青海省',
-                        'id' => 29
-                    ],
-                    'city' => [
-                        'text' => '玉树藏族自治州',
-                        'id' => 352
-                    ],
-                    'district' => [
-                        'text' => '囊谦县',
-                        'id' => 3119
-                    ],
-                    'address_id' => 114603
-                ],
-                'buyer_info' => [
-                    'nickname' => 59620248,
-                    'phone' => 15260983827,
-                    'message' => ''
-                ],
-                'discount_cut_price' => 0,
-                'integral_used' => 20,
-                'original_price' => 999,
-                'additional_info' => '',
-                'id' => 381471,
-                'order_id' => '5a770b8ecc6a5831434837',
-                'buyer_id' => '12b25577c5003dd03f793f47646e2923',
-                'payment_id' => 0,
-                'status' => 0,
-                'total_price' => 999.00,
-                'add_time' => '2018-02-04 21:33:02',
-                'payment_time' => 0,
-                'refund_time' => 0,
-                'goods_type' => 0,
-                'parent_shop_app_id' => 0,
-                'is_self_delivery' => 0,
-                'is_group_buy_order' => 0,
-                'appointment_time' => 0,
-                'goods_num' => 1,
-                'order_total_price' => 999.00
+                [
+                    'goods_id' => 3,
+                    'price' => 699.00,
+                    'stock' => 99,
+                    'goods_name' => '草莓味酸奶',
+                    'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
+                    'model' => '',
+                    'num' => 2,
+                ]
             ],
+            'remark' => '快点吧，黄花菜都凉了',
+            'original_express_fee' => 0,
+            'express_fee' => 20,
+            'address_info' => [
+                'name' => '张无忌',
+                'contact' => 13326250250,
+                'detailAddress' => '楼下那家收破烂的',
+                'province' => '青海省',
+                'city' => '玉树藏族自治州',
+                'district' =>  '囊谦县',
+                'address_id' => 11
+            ],
+            'buyer_info' => [
+                'nickname' => 59620248,
+                'phone' => 15260983827,
+                'message' => ''
+            ],
+            'discount_cut_price' => 0,
+            'integral_used' => 20,
+            'original_price' => 999,
+            'additional_info' => '',
+            'id' => 31,
+            'order_id' => '5a770b8ecc6a5831434837',
+            'payment_id' => 0,
+            'status' => 0,
+            'total_price' => 999.00,
+            'add_time' => '2018-02-04 21:33:02',
+            'payment_time' => 0,
+            'refund_time' => 0,
+            'is_self_delivery' => 0,
+            'goods_num' => 1,
+            'order_total_price' => 999.00
         ];
 
         return ['code' => '200', 'msg' => 'success', 'data' => $data];
@@ -528,7 +465,6 @@ class App extends BaseController
         $data = [
             [
                 'id' => 114603,
-                'buyer_id' => '12b25577c5003dd03f793f47646e2923',
                 'address_info' => [
                     'name' => '张无忌',
                     'contact' => 13326250250,
@@ -546,16 +482,13 @@ class App extends BaseController
                         'id' => 3119
                     ]
                 ],
-                'add_time' => 1517751160,
                 'is_default' => 1,
                 'telphone' => 13326250250,
-                'detail_address' => '',
                 'latitude' => '32.20295',
                 'longitude' => '96.48063',
             ],
             [
                 'id' => 114603,
-                'buyer_id' => '12b25577c5003dd03f793f47646e2923',
                 'address_info' => [
                     'name' => '张无忌',
                     'contact' => 13326250250,
@@ -573,10 +506,8 @@ class App extends BaseController
                         'id' => 3119
                     ]
                 ],
-                'add_time' => 1517751160,
                 'is_default' => 0,
                 'telphone' => 13326250250,
-                'detail_address' => '',
                 'latitude' => '32.20295',
                 'longitude' => '96.48063',
             ]
