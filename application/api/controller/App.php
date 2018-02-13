@@ -35,10 +35,17 @@ class App extends BaseController
     // 商品列表
     public function getGoodsList()
     {
-        $categoryId = input('category_id', 0);
+        $query = input('query_key', '');
+        $categoryId = input('query_value', 0);
         $page = input('page', 1);
         $offset = ($page - 1) * $this->_rows;
         $product = new Product();
+
+        // 分类页面加载，默认取第一个分类
+        if ($query == 'category_id' && $categoryId == 0) {
+            $category = (new Category())->getCategory();
+            $categoryId = count($category) ? $category[0]['id'] : 0;
+        }
 
         // 分类
         if ($categoryId) {
