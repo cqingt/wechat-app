@@ -204,7 +204,7 @@ class App extends BaseController
 
         // 评论
         $lastComment = $comment->getLastComment($goodsId);
-        $data['assess_total'] = $comment->getTotal($goodsId);
+        $goodsInfo['assess_total'] = $comment->getTotal($goodsId);
 
         if ($lastComment) {
             $goodsInfo['assess']['buyer_headimgurl'] = $lastComment['avatar'];
