@@ -537,7 +537,6 @@ class App extends BaseController
                     "query_value"    => $item['id']
                 ]
             );
-            unset($item['id'], $item['name']);
         }
 
         return ['code' => '200', 'msg' => 'success', 'data' => $category];
