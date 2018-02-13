@@ -9,9 +9,15 @@
 namespace app\api\controller;
 
 use app\common\model\Banner;
+use app\common\model\Category;
+use app\common\model\Product;
 
 class App extends BaseController
 {
+    // 分页，每页数量
+    protected $_rows = 12;
+
+    // 轮播图
     public function getBanners()
     {
         $banners = (new Banner())->getAll();
@@ -26,43 +32,50 @@ class App extends BaseController
         return ['code' => '200', 'msg' => 'success', 'data' => $banners];
     }
 
+    // 商品列表
     public function getGoodsList()
     {
-        $map = [
-            [
-                'id' => 3265413,
-                'title' => '草莓味酸奶',
-                'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                'price' => 999.00,
-                'sale_price' => 0.00,
-                'category' => ['速食冻品'],
-                'category_id' => [779112],
-                'sales' => 1,
-                'is_recommend' => 0,
-                'stock' => 999998,
-                'virtual_price' => 0.00,
-                'status' => 0
-            ],
-            [
-                'id' => 3265412,
-                'title' => '鸡脆骨,',
-                'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939487658c65cbc7b22b.png',
-                'price' => 999.00,
-                'sale_price' => 0.00,
-                'category' => ['家禽蛋类'],
-                'category_id' => [779110],
-                'sales' => 0,
-                'is_recommend' => 0,
-                'stock' => 999999,
-                'virtual_price' => 0.00,
-                'status' => 0,
-            ],
-        ];
-        for ($i = 0; $i < 20; $i++) {
-            $data[] = $map[$i % 2];
+        $categoryId = input('category_id', 0);
+        $page = input('page', 1);
+        $offset = ($page - 1) * $this->_rows;
+        $product = new Product();
+
+        // 分类
+        if ($categoryId) {
+            $products = $product->getProducts($categoryId, $offset, $this->_rows);
+            $total = $product->getProductCount($categoryId);
+        } else {
+
+            // 首页推荐
+            $products = $product->getRecommend($offset, $this->_rows);
+            $total = $product->getRecommendCount();
         }
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
+        foreach ($products as &$product) {
+            $product['title'] = $product['name'];
+            $product['cover'] = $product['image'];
+            $product['sales'] = $product['sales'] ?: $product['fade_sales']; // 销量
+            $product['sale_price'] = $product['origin_price'];
+            $product['category'] = [];
+            $product['category_id'] = [];
+            $product['is_recommend'] = $categoryId;
+            $product['virtual_price'] = $product['origin_price'];
+            $product['status'] = 0;
+            unset($product['name'], $product['image'], $product['fade_sales']);
+        }
+
+        $totalPage = ceil($total / $this->_rows);
+        $isMore = count($products) == $this->_rows ? 1 : 0;
+
+        return [
+            'code' => '200',
+            'msg' => 'success',
+            'data' => $products,
+            'is_more' => $isMore,
+            'current_page' => $page,
+            'count' => $total,
+            'total_page' => $totalPage
+        ];
     }
 
     public function getGoods()
@@ -512,14 +525,8 @@ class App extends BaseController
     // 分类
     public function category()
     {
-        $data = [
-            ['id' => 1, 'name' => '水果'],
-            ['id' => 2, 'name' => '肉类'],
-            ['id' => 3, 'name' => '保健'],
-            ['id' => 4, 'name' => '器械']
-        ];
-
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        $category = (new Category())->getCategory();
+        return ['code' => '200', 'msg' => 'success', 'data' => $category];
     }
 
     // 用户首页

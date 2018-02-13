@@ -149,11 +149,14 @@ class Product extends Controller
                 // 简单的直接使用db写入
                 Db::startTrans();
                 try {
+                    $data['create_time'] = time();
                     $data['content'] = 'aa'; //todo
+                    $data['stock'] = 0;
                     $model = Db::name($this->parseTable($controller));
-                    $ret = $model->insert($data);
+                    $result = $model->insert($data);
                     $productId = $model->getLastInsID();
 
+                    $stock = 0;
                     $skuArr = [];
                     $skuModel = new ProductSku();
 
@@ -164,11 +167,13 @@ class Product extends Controller
                                 $skuArr[$i][$key] = $sku[$i];
                             }
                             $skuArr[$i]['product_id'] = $productId;
-
+                            $stock += $skuArr[$i]['stock'];
                             // 批量更新或新增
                             $skuModel->insert($skuArr[$i]);
                         }
                     }
+                    // 更新库存
+                    $model->where(['id' => $productId])->update(['stock' => $stock]);
 
                     // 提交事务
                     Db::commit();
@@ -226,10 +231,12 @@ class Product extends Controller
                 // 简单的直接使用db更新
                 Db::startTrans();
                 try {
+                    $data['update_time'] = time();
                     $model = Db::name($this->parseTable($controller));
                     $ret = $model->where('id', $data['id'])->update($data);
 
                     $skuArr = [];
+                    $stock = 0;
                     $skuModel = new ProductSku();
 
                     if (isset($skus)) {
@@ -239,7 +246,7 @@ class Product extends Controller
                                 $skuArr[$i][$key] = $sku[$i];
                             }
                             $skuArr[$i]['product_id'] = $data['id'];
-
+                            $stock += $skuArr[$i]['stock'];
                             // 批量更新或新增
                             if ($skuId = $skuArr[$i]['id']) {
                                 unset($skuArr[$i]['id']);
@@ -250,7 +257,8 @@ class Product extends Controller
                             }
                         }
                     }
-
+                    // 更新库存
+                    $model->where(['id' => $data['id']])->update(['stock' => $stock]);
                     // 提交事务
                     Db::commit();
                 } catch (\Exception $e) {
