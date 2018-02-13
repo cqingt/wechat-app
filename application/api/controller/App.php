@@ -223,6 +223,30 @@ class App extends BaseController
     // 评论列表
     public function getAssessList()
     {
+        $type = input('level', '0');
+        $goodsId = input('goods_id');
+        $page = input('page', 1);
+        $offset = ($page - 1) * $this->_rows;
+
+        $comment = new ProductComment();
+        $commentList = $comment->getComments($goodsId, $type, $offset, $this->_rows);
+        $commentTotal = $comment->getTotal($goodsId, $type);
+        $pageTotal = ceil($commentTotal / $this->_rows);
+
+        $result = [];
+        foreach ($commentList as $item) {
+            $result[] = [
+                'buyer_headimgurl' => $item['avatar'],
+                'buyer_nickname' =>$item['username'],
+                'add_time' => date('Y-m-d H:i', $item['create_time']),
+                'assess_info' => [
+                    'content' => $item['content'],
+                    'has_img' => $item['images'] ? 1 : 0,
+                    'img_arr' => $item['images'] ? json_decode($item['images'], true) : []
+                ]
+            ];
+        }
+
         $map = [
             [
                 'buyer_headimgurl' => 'http://cdn.jisuapp.cn/zhichi_frontend/static/webapp/images/default_photo.png',
@@ -252,11 +276,16 @@ class App extends BaseController
 
         ];
 
-        for ($i = 0; $i < 20; $i++) {
-            $data[] = $map[$i % 2];
-        }
-
-        return ['code' => '200', 'msg' => 'success', 'data' => $data, 'num' => [count($data), 1, 2, 3, 4], 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
+        return [
+            'code' => '200',
+            'msg' => 'success',
+            'data' => $result,
+            'num' => [count($result), 1, 2, 3, 4],
+            'is_more' => count($result) == $this->_rows ? 1 : 0,
+            'current_page' => $page,
+            'count' => $commentTotal,
+            'total_page' => $pageTotal
+        ];
     }
 
     public function orderList()
