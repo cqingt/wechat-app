@@ -15,7 +15,7 @@ class Product extends Model
     public function getRecommend($offset = 0, $rows = 10)
     {
         return $this->where(['online' => 'Y', 'recommend' => 'Y'])
-            ->field(['id', 'name', 'image', 'sales', 'fade_sales', 'hots', 'price', 'origin_price', 'stock'])
+            ->field(['id', 'name', 'image', 'sales', 'fade_sales', 'hots', 'price', 'origin_price', 'stock', 'recommend'])
             ->order('hots desc')
             ->limit($offset, $rows)
             ->select()
@@ -31,7 +31,7 @@ class Product extends Model
     public function getProducts($categoryId, $offset = 0, $rows = 10)
     {
         return $this->where(['category_id' => $categoryId, 'online' => 'Y', 'recommend' => 'Y'])
-            ->field(['id', 'name', 'image', 'sales', 'fade_sales', 'hots', 'price', 'origin_price', 'stock'])
+            ->field(['id', 'name', 'image', 'sales', 'fade_sales', 'hots', 'price', 'origin_price', 'stock', 'recommend'])
             ->order('hots desc')
             ->limit($offset, $rows)
             ->select()
@@ -42,5 +42,18 @@ class Product extends Model
     public function getProductCount($categoryId)
     {
         return $this->where(['category_id' => $categoryId, 'online' => 'Y', 'recommend' => 'Y'])->count();
+    }
+
+    // info
+    public function getInfo($productId)
+    {
+        $info = $this->where(['id' => $productId, 'online' => 'Y'])
+            ->field(
+                ['id', 'name' => 'title', 'image' => 'cover', 'sales', 'fade_sales', 'hots', 'price', 'attr',
+                    'origin_price', 'stock', 'recommend', 'content' => 'description']
+            )
+            ->find();
+
+        return $info ? $info->toArray() : [];
     }
 }

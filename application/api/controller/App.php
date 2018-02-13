@@ -10,7 +10,10 @@ namespace app\api\controller;
 
 use app\common\model\Banner;
 use app\common\model\Category;
+use app\common\model\Config;
 use app\common\model\Product;
+use app\common\model\ProductComment;
+use app\common\model\ProductSku;
 
 class App extends BaseController
 {
@@ -65,7 +68,7 @@ class App extends BaseController
             $product['sale_price'] = $product['origin_price'];
             $product['category'] = [];
             $product['category_id'] = [];
-            $product['is_recommend'] = $categoryId;
+            $product['is_recommend'] = $product['recommend'] == 'Y' ? 1 : 0;
             $product['virtual_price'] = $product['origin_price'];
             $product['status'] = 0;
             unset($product['name'], $product['image'], $product['fade_sales']);
@@ -87,19 +90,56 @@ class App extends BaseController
 
     public function getGoods()
     {
+        $goodsId = input('data_id', 0, 'int');
+        $goodsInfo = (new Product)->getInfo($goodsId);
+        $comment = new ProductComment();
+        $skus = (new ProductSku())->getAll($goodsId);
+        $goodsInfo['express_fee'] = (new Config())->getExpressFee();
+
+        $modelItems = [];
+        // sku 选择
+        $model = [
+            [
+                'name' => $goodsInfo['attr'],
+                'subModelId' => [],
+                'subModelName' => []
+            ]
+        ];
+
+        if (!empty($skus)) {
+            foreach ($skus as $sku) {
+                $modelItems[] = [
+                    'id' => $sku['id'],
+                    'model' => $sku['attr'],
+                    'img_url' => '',
+                    'price' => $sku['price'],
+                    'stock' => $sku['stock'],
+                    'virtual_price' => $sku['price'],
+                ];
+
+                array_push($model[0]['subModelId'], $sku['id']);
+                array_push($model[0]['subModelName'], $sku['attr']);
+            }
+        }
+        $goodsInfo['model_items'] = $modelItems;
+        $goodsInfo['model'] = $model;
+
+        $goodsInfo['is_recommend'] = $goodsInfo['recommend'] == 'Y' ? 1 : 0;
+        $goodsInfo['sale_price'] = $goodsInfo['price'];
+        $goodsInfo['virtual_price'] = $goodsInfo['price'];
+        $goodsInfo['img_urls'] = [$goodsInfo['cover']];
+
         $data = [
-            'description' => '商品详情',
             'id' => 3265413,
             'title' => '草莓味酸奶',
             'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
             'price' => 999.00,
-            'sale_price' => 0.00,
-            'category' => ['速食冻品'],
+            'description' => '商品详情',
+            'sale_price' => 0.00,//
             'sales' => 1,
             'is_recommend' => 0,
             'stock' => 999998,
             'virtual_price' => 0.00,
-            'category_id' => [779112],
             'model_items' => [
                 [
                     'id' => 1,
@@ -148,8 +188,8 @@ class App extends BaseController
             ],
             'assess_total' => 30,
             'assess' => [
-                'buyer_headimgurl' => 'http://cdn.jisuapp.cn/zhichi_frontend/static/webapp/images/default_photo.png',
-                'buyer_nickname' => 'default',
+                'buyer_headimgurl' => '',
+                'buyer_nickname' => '',
                 'add_time' => date('Y-m-d H:i'),
                 'assess_info' => [
                     'content' => '评论内容',
@@ -162,7 +202,22 @@ class App extends BaseController
             ],
         ];
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        // 评论
+        $lastComment = $comment->getLastComment($goodsId);
+        $data['assess_total'] = $comment->getTotal($goodsId);
+
+        if ($lastComment) {
+            $goodsInfo['assess']['buyer_headimgurl'] = $lastComment['avatar'];
+            $goodsInfo['assess']['buyer_nickname'] = $lastComment['username'];
+            $goodsInfo['assess']['add_time'] = date('Y-m-d H:i', $lastComment['create_time']);
+            $goodsInfo['assess']['assess_info'] = [
+                'content' => $lastComment['content'],
+                'has_img' => $lastComment['images'] ? 1 : 0,
+                'img_arr' => $lastComment['images'] ? json_decode($lastComment['images'], true) : []
+            ];
+        }
+
+        return ['code' => '200', 'msg' => 'success', 'data' => $goodsInfo];
     }
 
     // 评论列表
