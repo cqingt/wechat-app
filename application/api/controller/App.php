@@ -8,8 +8,23 @@
 
 namespace app\api\controller;
 
+use app\common\model\Banner;
+
 class App extends BaseController
 {
+    public function getBanners()
+    {
+        $banners = (new Banner())->getAll();
+
+        foreach ($banners as &$banner) {
+            $banner['pic'] = $banner['image'];
+            $banner['goods_id'] = $banner['product_id'];
+            $banner['eventHandler'] = 'tapGoodsTradeHandler'; // 固定
+            unset($banner['id'], $banner['image'], $banner['product_id']);
+        }
+
+        return ['code' => '200', 'msg' => 'success', 'data' => $banners];
+    }
 
     public function getGoodsList()
     {
