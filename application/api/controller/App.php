@@ -542,6 +542,7 @@ class App extends BaseController
                     "refresh_object" => "list-902893529679",
                     "query_key"      => "category_id",
                     "query_value"    => $item['id'],
+                    "parent_type"    => 'classify',
                     "item_index"     => $key // 切换 选中时使用
                 ]
             );
