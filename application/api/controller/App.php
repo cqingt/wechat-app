@@ -534,8 +534,9 @@ class App extends BaseController
     {
         $category = (new Category())->getCategory();
 
-        foreach ($category as &$item) {
+        foreach ($category as $key => &$item) {
             $item['text'] = $item['name'];
+            $item['item_index'] = $key; // 切换 选中时使用
             $item['eventHandler'] = 'tapRefreshListHandler';
             $item['eventParams'] = json_encode(
                 [
