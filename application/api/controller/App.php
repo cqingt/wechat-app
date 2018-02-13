@@ -543,6 +543,7 @@ class App extends BaseController
                     "query_key"      => "category_id",
                     "query_value"    => $item['id'],
                     "parent_type"    => 'classify',
+                    "parent_comp_id" => 'classify2',
                     "item_index"     => $key // 切换 选中时使用
                 ]
             );
