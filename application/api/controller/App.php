@@ -526,6 +526,20 @@ class App extends BaseController
     public function category()
     {
         $category = (new Category())->getCategory();
+
+        foreach ($category as &$item) {
+            $item['text'] = $item['name'];
+            $item['eventHandler'] = 'tapRefreshListHandler';
+            $item['eventParams'] = json_encode(
+                [
+                    "refresh_object" => "list-902893529679",
+                    "query_key"      => "category_id",
+                    "query_value"    => $item['id']
+                ]
+            );
+            unset($item['id'], $item['name']);
+        }
+
         return ['code' => '200', 'msg' => 'success', 'data' => $category];
     }
 
