@@ -536,13 +536,13 @@ class App extends BaseController
 
         foreach ($category as $key => &$item) {
             $item['text'] = $item['name'];
-            $item['item_index'] = $key; // 切换 选中时使用
             $item['eventHandler'] = 'tapRefreshListHandler';
             $item['eventParams'] = json_encode(
                 [
                     "refresh_object" => "list-902893529679",
                     "query_key"      => "category_id",
-                    "query_value"    => $item['id']
+                    "query_value"    => $item['id'],
+                    "item_index"     => $key // 切换 选中时使用
                 ]
             );
         }
