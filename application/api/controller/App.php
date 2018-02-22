@@ -482,7 +482,7 @@ class App extends BaseController
                 'cart_id' => $item['id'],
                 'goods_id' => $item['product_id'],
                 'sku_id' => $item['sku_id'],
-                'editSelected' => 0,
+                'editSelected' => 1,
                 'selected' => $item['selected'] == 'Y' ? 1 : 0,
                 'num' => $item['num'],
                 'title' => $item['name'],
@@ -540,7 +540,11 @@ class App extends BaseController
     // 删除购物车商品
     public function deleteCart()
     {
-        $cartList = input('cart_id_arr');
+        $cartList = $_POST['cart_id_arr'];
+
+        if (empty($cartList)) {
+            return $this->_error('UNKNOWN_ERROR');
+        }
 
         Db::startTrans();
 
