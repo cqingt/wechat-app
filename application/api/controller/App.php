@@ -9,6 +9,7 @@
 namespace app\api\controller;
 
 use app\common\model\Banner;
+use app\common\model\Cart;
 use app\common\model\Category;
 use app\common\model\Config;
 use app\common\model\Product;
@@ -19,6 +20,14 @@ class App extends BaseController
 {
     // 分页，每页数量
     protected $_rows = 12;
+
+    public function _empty()
+    {
+        return [
+            'code' => '404',
+            'msg' => '接口不存在'
+        ];
+    }
 
     // 轮播图
     public function getBanners()
@@ -38,27 +47,57 @@ class App extends BaseController
     // 商品列表
     public function getGoodsList()
     {
-        $query = input('query_key', '');
+        $sortKey = input('sort_key', '');
+        $sortDirection = input('sort_direction', 0); // 0 从大到小，1从小到大
+        $searchValue = input('search_value', ''); // 搜索内容
+        $searchCategoryId = input('category_id'); // 搜索分类过滤
+
+        $query = input('query_key', ''); // 分类
         $categoryId = input('query_value', 0);
         $page = input('page', 1);
         $offset = ($page - 1) * $this->_rows;
         $product = new Product();
+        $products = [];
 
-        // 分类页面加载，默认取第一个分类
-        if ($query == 'category_id' && $categoryId == 0) {
-            $category = (new Category())->getCategory();
-            $categoryId = count($category) ? $category[0]['id'] : 0;
-        }
+        // 来自搜索
+        if (! empty($searchValue)) {
+            $sortBy = 'hots';
+            $sort = 'DESC';
+            $condition = [];
 
-        // 分类
-        if ($categoryId) {
-            $products = $product->getProducts($categoryId, $offset, $this->_rows);
-            $total = $product->getProductCount($categoryId);
+            // 选择分类
+            if (!empty($searchCategoryId)) {
+                $condition = ['category_id' => $searchCategoryId];
+            }
+
+            // 搜索词
+            $condition = array_push($condition, ['name' => ['LIKE', '%' . $searchValue . '%']]);
+
+            if (!empty($sortKey) && in_array($sortKey, ['sales', 'price'])) {
+                $sortBy = $sortKey;
+                $sort = $sortDirection == 1 ? 'ASC' : 'DESC';
+            }
+
+            $products = $product->getProducts($condition, $offset, $this->_rows, $sortBy, $sort);
+            $total = $product->getProductCount($condition);
         } else {
+            // 分类页面加载，默认取第一个分类
+            if ($query == 'category_id' && $categoryId == 0) {
+                $category = (new Category())->getCategory();
+                $categoryId = count($category) ? $category[0]['id'] : 0;
+            }
 
-            // 首页推荐
-            $products = $product->getRecommend($offset, $this->_rows);
-            $total = $product->getRecommendCount();
+            // 选择分类时
+            if ($categoryId) {
+                $condition = ['category_id' => $categoryId];
+                $products = $product->getProducts($condition, $offset, $this->_rows);
+                $total = $product->getProductCount($condition);
+            } else {
+
+                // 首页推荐
+                $products = $product->getRecommend($offset, $this->_rows);
+                $total = $product->getRecommendCount();
+            }
         }
 
         foreach ($products as &$product) {
@@ -280,7 +319,7 @@ class App extends BaseController
             'code' => '200',
             'msg' => 'success',
             'data' => $result,
-            'num' => [count($result), 1, 2, 3, 4],
+            'num' => [$commentTotal, $comment->getTotal($goodsId, 1), $comment->getTotal($goodsId, 2), $comment->getTotal($goodsId, 3), $comment->getTotal($goodsId, 4)],
             'is_more' => count($result) == $this->_rows ? 1 : 0,
             'current_page' => $page,
             'count' => $commentTotal,
@@ -447,6 +486,27 @@ class App extends BaseController
     // 购物车
     public function cartList()
     {
+        $userId = $this->getUserId();
+        $cartList = (new Cart())->getCartList($userId);
+
+        foreach ($cartList as &$item) {
+            $item['goods_id'] = $item['id'];
+            $item = [
+                'cart_id' => $item['id'],
+                'goods_id' => $item['product_id'],
+                'editSelected' => 0,
+                'selected' => $item['selected'] == 'Y' ? 1 : 0,
+                'num' => $item['num'],
+                'title' => $item['name'],
+                'cover' => $item['image'],
+                'price' => $item['price'],
+                'original_price' => $item['original_price'],
+                'stock' => $item['stock'],
+                'sales' => 0,
+                'status' => 0,
+                'model_value' => [$item['sku']]
+            ];
+        }
         $data = [
             [
                 'goods_id' => 3265412,
@@ -465,7 +525,7 @@ class App extends BaseController
             ]
         ];
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        return ['code' => '200', 'msg' => 'success', 'data' => $cartList];
     }
 
     // 消息
@@ -787,5 +847,19 @@ class App extends BaseController
         ];
 
         return ['code' => '200', 'msg' => 'success', 'data' => $data];
+    }
+
+    protected function getUserId()
+    {
+        return 1;
+    }
+
+    protected function getUserInfo()
+    {
+        return [
+            'nickname' => 'wechat',
+            'mobile'   => '15260983827',
+            'avatar'   => ''
+        ];
     }
 }

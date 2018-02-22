@@ -28,20 +28,21 @@ class Product extends Model
         return $this->where(['online' => 'Y', 'recommend' => 'Y'])->count();
     }
 
-    public function getProducts($categoryId, $offset = 0, $rows = 10)
+    public function getProducts($condition, $offset = 0, $rows = 10, $sortBy = 'hots', $sort = 'DESC')
     {
-        return $this->where(['category_id' => $categoryId, 'online' => 'Y', 'recommend' => 'Y'])
+        $condition = array_merge($condition, ['online' => 'Y', 'recommend' => 'Y']);
+        return $this->where($condition)
             ->field(['id', 'name', 'image', 'sales', 'fade_sales', 'hots', 'price', 'origin_price', 'stock', 'recommend'])
-            ->order('hots desc')
+            ->order($sortBy . ' ' . $sort)
             ->limit($offset, $rows)
             ->select()
             ->toArray();
     }
 
     // 总数
-    public function getProductCount($categoryId)
+    public function getProductCount($condition)
     {
-        return $this->where(['category_id' => $categoryId, 'online' => 'Y', 'recommend' => 'Y'])->count();
+        return $this->where(array_merge($condition, ['online' => 'Y', 'recommend' => 'Y']))->count();
     }
 
     // info
