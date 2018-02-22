@@ -71,7 +71,7 @@ class App extends BaseController
             }
 
             // 搜索词
-            $condition = array_push($condition, ['name' => ['LIKE', '%' . $searchValue . '%']]);
+            $condition = array_merge($condition, ['name' => ['LIKE', '%' . $searchValue . '%']]);
 
             if (!empty($sortKey) && in_array($sortKey, ['sales', 'price'])) {
                 $sortBy = $sortKey;
