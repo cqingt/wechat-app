@@ -43,7 +43,7 @@ class ProductSku extends Model
     }
 
     // 获取sku属性
-    public function getAttr($productId, $skuId)
+    public function getSkuAttr($productId, $skuId)
     {
         return $this->where(['product_id' => $productId, 'id' => $skuId, 'enabled'=> 'Y'])->value('attr');
     }
