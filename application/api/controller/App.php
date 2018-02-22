@@ -12,6 +12,9 @@ use app\common\model\Banner;
 use app\common\model\Cart;
 use app\common\model\Category;
 use app\common\model\Config;
+use app\common\model\Order;
+use app\common\model\OrderAddress;
+use app\common\model\OrderDetail;
 use app\common\model\Product;
 use app\common\model\ProductComment;
 use app\common\model\ProductSku;
@@ -316,7 +319,67 @@ class App extends BaseController
 
     public function orderList()
     {
-        $status = isset($_POST['status']) && !is_null($_POST['status']) ? (int)$_POST['status'] : intval(rand(0, 8));
+        $status = isset($_POST['status']) && !is_null($_POST['status']) ? (int)$_POST['status'] : null;
+
+        $page = input('page', 1);
+        $offset = ($page - 1) * $this->_rows;
+        $userId = $this->getUserId();
+        $order = new Order();
+        $orderDetail = new OrderDetail();
+        $total = $order->getTotal($userId, $status);
+        $orderList = $order->getOrderList($userId, $status, $offset, $this->_rows);
+        $totalPage = ceil($total / $this->_rows);
+        $isMore = count($orderList) == $this->_rows ? 1 : 0;
+
+        foreach ($orderList as &$item) {
+            $item = [
+                'original_express_fee' => 0,
+                'original_price' => $item['price'],
+                'additional_info' => '',
+                'id' => $item['id'],
+                'order_id' => $item['order_sn'],
+                'payment_id' => 0,
+                'status' => $item['status'],
+                'total_price' => $item['price'],
+                'add_time' => date('Y-m-d H:i:s', $item['create_time']),
+                'payment_time' => date('Y-m-d H:i:s', $item['pay_time']),
+                'refund_time' => 0,
+                'is_self_delivery' => 0,
+                'goods_num' => 0,
+                'remark' => $item['remark'],
+                'address_info' => [
+                    'address_id' => 0,
+                    'name' => '',
+                    'contact' => '',
+                    'detailAddress' => '',
+                    'province' => '',
+                    'city' => '',
+                    'district' => '',
+                ],
+                'buyer_info' => [
+                    'nickname' => '',
+                    'phone' => '',
+                    'message' => ''
+                ]
+            ];
+
+            $orderGoods = $orderDetail->getDetail($item['id']);
+
+            foreach ($orderGoods as $orderGood) {
+                $item['goods_info'][] = [
+                    'goods_id' => 0,
+                    'price' => $orderGood['product_price'],
+                    'stock' => 99,
+                    'goods_name' => $orderGood['product_name'],
+                    'module_attr' => $orderGood['product_sku'],
+                    'cover' => $orderGood['product_image'],
+                    'model' => $orderGood['product_sku'],
+                    'num' => $orderGood['product_num'],
+                ];
+                $item['goods_num'] += $orderGood['product_num']; // 商品数量统计
+            }
+        }
+
         $map = [
             [
                 'original_express_fee' => 0,
@@ -403,71 +466,69 @@ class App extends BaseController
                 'remark' => '快点吧，黄花菜都凉了',
             ],
         ];
-        for ($i = 0; $i < 20; $i++) {
-            $data[] = $map[$i % 2];
-        }
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
+        return $this->_success($orderList, $isMore, $total, $page, $totalPage);
+        //return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
     }
 
     public function getOrder()
     {
-        $data = [
-            'goods_info' => [
-                [
-                    'goods_id' => 2,
-                    'price' => 999.00,
-                    'stock' => 99,
-                    'goods_name' => '草莓味酸奶',
-                    'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'model' => '',
-                    'num' => 1,
-                ],
-                [
-                    'goods_id' => 3,
-                    'price' => 699.00,
-                    'stock' => 99,
-                    'goods_name' => '草莓味酸奶',
-                    'cover' => 'http://img.weiye.me/zcimgdir/thumb/t_148939466558c65be937c02.png',
-                    'model' => '',
-                    'num' => 2,
-                ]
-            ],
-            'remark' => '快点吧，黄花菜都凉了',
+        $orderId = input('order_id', 0, 'int');
+        $userId = $this->getUserId();
+        $orderInfo = (new Order())->getOrderInfo($userId, $orderId);
+        $address = (new OrderAddress())->getAddress($orderId);
+        $orderGoods = (new OrderDetail())->getDetail($orderId);
+        $result = [
+            'remark' => $orderInfo['remark'],
             'original_express_fee' => 0,
-            'express_fee' => 20,
-            'address_info' => [
-                'name' => '张无忌',
-                'contact' => 13326250250,
-                'detailAddress' => '楼下那家收破烂的',
-                'province' => '青海省',
-                'city' => '玉树藏族自治州',
-                'district' => '囊谦县',
-                'address_id' => 11
-            ],
+            'express_fee' => 0,
             'buyer_info' => [
-                'nickname' => 59620248,
-                'phone' => 15260983827,
+                'nickname' => '',
+                'phone' => '',
                 'message' => ''
             ],
             'discount_cut_price' => 0,
-            'integral_used' => 20,
-            'original_price' => 999,
+            'integral_used' => 0,
+            'original_price' => $orderInfo['price'],
             'additional_info' => '',
-            'id' => 31,
-            'order_id' => '5a770b8ecc6a5831434837',
+            'id' => $orderInfo['id'],
+            'order_id' => $orderInfo['order_sn'],
             'payment_id' => 0,
-            'status' => 0,
-            'total_price' => 999.00,
-            'add_time' => '2018-02-04 21:33:02',
-            'payment_time' => 0,
+            'status' => $orderInfo['status'],
+            'total_price' => $orderInfo['price'],
+            'add_time' => date('Y-m-d H:i:s', $orderInfo['create_time']),
+            'payment_time' => date('Y-m-d H:i:s', $orderInfo['pay_time']),
             'refund_time' => 0,
             'is_self_delivery' => 0,
-            'goods_num' => 1,
-            'order_total_price' => 999.00
+            'goods_num' => 0,
+            'order_total_price' => $orderInfo['price']
         ];
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        $result['address_info'] = [
+            'address_id' => $address['id'],
+            'name' => $address['username'],
+            'contact' => $address['telephone'],
+            'province' => $address['province'],
+            'city' => $address['city'],
+            'district' => $address['area'],
+            'detailAddress' => $address['address'],
+        ];
+
+        foreach ($orderGoods as $orderGood) {
+            $result['goods_info'][] = [
+                'goods_id' => 0,
+                'price' => $orderGood['product_price'],
+                'stock' => 99,
+                'goods_name' => $orderGood['product_name'],
+                'module_attr' => $orderGood['product_sku'],
+                'cover' => $orderGood['product_image'],
+                'model' => $orderGood['product_sku'],
+                'num' => $orderGood['product_num'],
+            ];
+            $result['goods_num'] += $orderGood['product_num']; // 商品数量统计
+        }
+
+        return $this->_successful($result);
     }
 
     // 购物车
