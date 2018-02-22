@@ -38,4 +38,11 @@ class Cart extends Model
         return $this->where(['user_id' => $userId, 'product_id' => $productId, 'sku_id' => $skuId])
             ->update(['num' => $num]);
     }
+
+    // 删除
+    public function deleteById($userId, $id)
+    {
+        return $this->where(['user_id' => $userId, 'id' => $id])
+            ->delete();
+    }
 }

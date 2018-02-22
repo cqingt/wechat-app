@@ -16,6 +16,7 @@ use app\common\model\Product;
 use app\common\model\ProductComment;
 use app\common\model\ProductSku;
 use library\Code;
+use think\Db;
 
 class App extends BaseController
 {
@@ -539,7 +540,24 @@ class App extends BaseController
     // 删除购物车商品
     public function deleteCart()
     {
+        $cartList = input('cart_id_arr');
 
+        Db::startTrans();
+
+        try{
+            if (!empty($cartList)) {
+                for ($i = 0, $count = count($cartList); $i < $count; $i ++) {
+                    (new Cart())->deleteById($this->getUserId(), $cartList[$i]);
+                }
+            }
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            return $this->_error();
+        }
+        return $this->_successful();
     }
 
     // 消息
