@@ -15,6 +15,7 @@ class Code{
         'SIGN_NOT_MATCH'      => ['code' => '403', 'msg' => '签名错误'],
         'API_NOT_FOUND'       => ['code' => '404', 'msg' => '接口未找到'],
         'SERVICE_IS_BUSINESS' => ['code' => '405', 'msg' => '服务忙，请稍后'],
+        'OVERFLOW_STOCK'      => ['code' => '406', 'msg' => '库存不足'],
     ];
 
     /**

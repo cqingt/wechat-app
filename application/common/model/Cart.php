@@ -24,12 +24,18 @@ class Cart extends Model
             ->where(['cart.user_id' => $userId, 'cart.enabled' => 'Y'])
             ->order('cart.update_time DESC')
             ->field(
-                ['cart.id', 'cart.num', 'cart.selected','prod.id' => 'product_id',  'prod.name', 'prod.price' => 'original_price', 'prod.image',
+                ['cart.id', 'cart.num', 'cart.sku_id', 'cart.selected','prod.id' => 'product_id',  'prod.name', 'prod.price' => 'original_price', 'prod.image',
                     'prod.attr', 'sku.attr' => 'sku', 'sku.stock', 'sku.price']
             )
             ->select()
             ->toArray();
 
         return $result;
+    }
+
+    public function updateNum($userId, $productId, $skuId, $num)
+    {
+        return $this->where(['user_id' => $userId, 'product_id' => $productId, 'sku_id' => $skuId])
+            ->update(['num' => $num]);
     }
 }

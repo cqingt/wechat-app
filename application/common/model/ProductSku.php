@@ -29,4 +29,30 @@ class ProductSku extends Model
 
         return $skus;
     }
+
+    // 获取库存
+    public function getStock($productId, $skuId)
+    {
+        return $this->where(['product_id' => $productId, 'id' => $skuId, 'enabled'=> 'Y'])->value('stock');
+    }
+
+    // 获取价格
+    public function getPrice($productId, $skuId)
+    {
+        return $this->where(['product_id' => $productId, 'id' => $skuId, 'enabled'=> 'Y'])->value('price');
+    }
+
+    // 获取sku属性
+    public function getAttr($productId, $skuId)
+    {
+        return $this->where(['product_id' => $productId, 'id' => $skuId, 'enabled'=> 'Y'])->value('attr');
+    }
+
+    public function getSku($productId, $skuId)
+    {
+        return $this->where(['product_id' => $productId, 'id' => $skuId, 'enabled'=> 'Y'])
+            ->field(['attr', 'stock', 'price'])
+            ->find()
+            ->toArray();
+    }
 }

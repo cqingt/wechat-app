@@ -18,7 +18,15 @@ class ProductComment extends Model
      */
     public function getTotal($productId, $type = 0)
     {
-        return $this->where(array_merge(['product_id' => $productId, 'enabled' => 'Y'], $this->getCondition($type)))->count();
+        if ($type > 0 && $type < 4) {
+            $condition = ['type' => $type];
+        } else if ($type == 4) {
+            $condition = ['images' => ['NEQ', '']];
+        } else {
+            $condition = [];
+        }
+
+        return $this->where(array_merge(['product_id' => $productId, 'enabled' => 'Y'], $condition))->count();
     }
 
     public function getCondition($type = 0)

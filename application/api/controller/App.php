@@ -15,6 +15,7 @@ use app\common\model\Config;
 use app\common\model\Product;
 use app\common\model\ProductComment;
 use app\common\model\ProductSku;
+use library\Code;
 
 class App extends BaseController
 {
@@ -41,10 +42,10 @@ class App extends BaseController
             unset($banner['id'], $banner['image'], $banner['product_id']);
         }
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $banners];
+        return $this->_successful($banners);
     }
 
-    // 商品列表
+    // 商品列表-搜索
     public function getGoodsList()
     {
         $sortKey = input('sort_key', '');
@@ -116,17 +117,10 @@ class App extends BaseController
         $totalPage = ceil($total / $this->_rows);
         $isMore = count($products) == $this->_rows ? 1 : 0;
 
-        return [
-            'code' => '200',
-            'msg' => 'success',
-            'data' => $products,
-            'is_more' => $isMore,
-            'current_page' => $page,
-            'count' => $total,
-            'total_page' => $totalPage
-        ];
+        return $this->_success($products, $isMore, $total, $page, $totalPage);
     }
 
+    // 商品详情
     public function getGoods()
     {
         $goodsId = input('data_id', 0, 'int');
@@ -256,7 +250,7 @@ class App extends BaseController
             ];
         }
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $goodsInfo];
+        return $this->_successful($goodsInfo); //['code' => '200', 'msg' => 'success', 'data' => $goodsInfo];
     }
 
     // 评论列表
@@ -314,17 +308,9 @@ class App extends BaseController
             ]
 
         ];
-
-        return [
-            'code' => '200',
-            'msg' => 'success',
-            'data' => $result,
-            'num' => [$commentTotal, $comment->getTotal($goodsId, 1), $comment->getTotal($goodsId, 2), $comment->getTotal($goodsId, 3), $comment->getTotal($goodsId, 4)],
-            'is_more' => count($result) == $this->_rows ? 1 : 0,
-            'current_page' => $page,
-            'count' => $commentTotal,
-            'total_page' => $pageTotal
-        ];
+        $isMore =  count($result) == $this->_rows ? 1 : 0;
+        $options = [ 'num' => [$commentTotal, $comment->getTotal($goodsId, 1), $comment->getTotal($goodsId, 2), $comment->getTotal($goodsId, 3), $comment->getTotal($goodsId, 4)]];
+        return $this->_success($result, $isMore, $commentTotal, $page, $pageTotal, $options);
     }
 
     public function orderList()
@@ -494,6 +480,7 @@ class App extends BaseController
             $item = [
                 'cart_id' => $item['id'],
                 'goods_id' => $item['product_id'],
+                'sku_id' => $item['sku_id'],
                 'editSelected' => 0,
                 'selected' => $item['selected'] == 'Y' ? 1 : 0,
                 'num' => $item['num'],
@@ -525,7 +512,34 @@ class App extends BaseController
             ]
         ];
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $cartList];
+        return $this->_successful($cartList);
+    }
+
+    // 添加购物车
+    public function addCart()
+    {
+        $productId = input('goods_id', 0, 'int');
+        $skuId = input('sku_id', 0, 'int');
+        $num = input('num', 1, 'int');
+
+        $stock = (new ProductSku())->getStock($productId, $skuId);
+        if ($stock && $num >= 1 && $num <= $stock) {
+            if ((new Cart())->updateNum($this->getUserId(), $productId, $skuId, $num)) {
+                return ['code' => '200', 'msg' => 'success', 'data' => []];
+            }
+        }
+
+        if ($num > $stock) {
+            return $this->_error('OVERFLOW_STOCK');
+        }
+
+        return $this->_error();
+    }
+
+    // 删除购物车商品
+    public function deleteCart()
+    {
+
     }
 
     // 消息
@@ -581,11 +595,6 @@ class App extends BaseController
         ];
 
         return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
-    }
-
-    public function addCart()
-    {
-        return ['code' => '200', 'msg' => 'success', 'data' => []];
     }
 
     // 购物车与检查
@@ -861,5 +870,53 @@ class App extends BaseController
             'mobile'   => '15260983827',
             'avatar'   => ''
         ];
+    }
+
+    /**
+     * 不带分页
+     * @param array $data
+     * @return array
+     */
+    protected function _successful($data = [])
+    {
+        return [
+            'code' => '200',
+            'msg' => 'success',
+            'data' => $data
+        ];
+    }
+
+    /**
+     *  带分页
+     * @param $data
+     * @param $isMore
+     * @param $page
+     * @param $total
+     * @param $totalPage
+     * @param array $option
+     * @return array
+     */
+    protected function _success($data, $isMore, $total, $page = 1, $totalPage = 1, $option = [])
+    {
+        $result = [
+            'code' => '200',
+            'msg' => 'success',
+            'data' => $data,
+            'is_more' => $isMore,
+            'current_page' => $page,
+            'count' => $total,
+            'total_page' => $totalPage
+        ];
+
+        if (! empty($option)) {
+            $result = array_merge($result, $option);
+        }
+
+        return $result;
+    }
+
+    protected function _error($errorCode = 'UNKNOWN_ERROR')
+    {
+        return Code::get($errorCode);
     }
 }
