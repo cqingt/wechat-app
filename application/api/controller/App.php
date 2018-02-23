@@ -26,6 +26,17 @@ class App extends BaseController
     // 分页，每页数量
     protected $_rows = 12;
 
+    protected $orderStatus = [
+        0 => 0,  // 待付款
+        1 => 10, // 待发货
+        2 => 30, // 待收货
+        3 => 40, // 待评价
+        4 => 60, // 退款审核中
+        5 => 70, // 正在退款
+        6 => 50, // 已完成
+        7 => 90, // 已关闭
+    ]; // 0待支付，10已支付，20支付失败，30已发货，40已收货，50完成，60申请退款，70退款中，80已退款，90已关闭
+
     public function _empty()
     {
         return [
@@ -317,9 +328,13 @@ class App extends BaseController
         return $this->_success($result, $isMore, $commentTotal, $page, $pageTotal, $options);
     }
 
+    // 订单列表
     public function orderList()
     {
-        $status = isset($_POST['status']) && !is_null($_POST['status']) ? (int)$_POST['status'] : null;
+        $status = input('status', null);
+        if ($status) {
+            $status = isset($this->orderStatus[$status]) ? $this->orderStatus[$status] : null;
+        }
 
         $page = input('page', 1);
         $offset = ($page - 1) * $this->_rows;
@@ -330,16 +345,17 @@ class App extends BaseController
         $orderList = $order->getOrderList($userId, $status, $offset, $this->_rows);
         $totalPage = ceil($total / $this->_rows);
         $isMore = count($orderList) == $this->_rows ? 1 : 0;
+        $statusFlip = array_flip($this->orderStatus);
 
         foreach ($orderList as &$item) {
             $item = [
                 'original_express_fee' => 0,
                 'original_price' => $item['price'],
                 'additional_info' => '',
-                'id' => $item['id'],
-                'order_id' => $item['order_sn'],
+                'order_id' => $item['id'],
+                'order_sn' => $item['order_sn'],
                 'payment_id' => 0,
-                'status' => $item['status'],
+                'status' => isset($statusFlip[$item['status']]) ? $statusFlip[$item['status']] : 9,
                 'total_price' => $item['price'],
                 'add_time' => date('Y-m-d H:i:s', $item['create_time']),
                 'payment_time' => date('Y-m-d H:i:s', $item['pay_time']),
@@ -478,6 +494,7 @@ class App extends BaseController
         $orderInfo = (new Order())->getOrderInfo($userId, $orderId);
         $address = (new OrderAddress())->getAddress($orderId);
         $orderGoods = (new OrderDetail())->getDetail($orderId);
+        $statusFlip = array_flip($this->orderStatus);
         $result = [
             'remark' => $orderInfo['remark'],
             'original_express_fee' => 0,
@@ -494,7 +511,7 @@ class App extends BaseController
             'id' => $orderInfo['id'],
             'order_id' => $orderInfo['order_sn'],
             'payment_id' => 0,
-            'status' => $orderInfo['status'],
+            'status' => isset($statusFlip[$orderInfo['status']]) ? $statusFlip[$orderInfo['status']] : 9,
             'total_price' => $orderInfo['price'],
             'add_time' => date('Y-m-d H:i:s', $orderInfo['create_time']),
             'payment_time' => date('Y-m-d H:i:s', $orderInfo['pay_time']),
