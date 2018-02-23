@@ -14,6 +14,7 @@ use app\common\model\Category;
 use app\common\model\Config;
 use app\common\model\Order;
 use app\common\model\OrderAddress;
+use app\common\model\OrderComment;
 use app\common\model\OrderDetail;
 use app\common\model\Product;
 use app\common\model\ProductComment;
@@ -21,6 +22,7 @@ use app\common\model\ProductSku;
 use app\common\model\UserAddress;
 use library\Code;
 use think\Db;
+use think\Exception;
 
 class App extends BaseController
 {
@@ -329,6 +331,47 @@ class App extends BaseController
         return $this->_success($result, $isMore, $commentTotal, $page, $pageTotal, $options);
     }
 
+    // 新增评论
+    public function addAssessList()
+    {
+        $userId = $this->getUserId();
+        $submitData = $_POST['submitData'];
+
+        if (! empty($submitData)) {
+            //$orderId = $submitData['order_id'];
+            $goods = $submitData['goods'];
+            $commentModel = new OrderComment();
+
+            Db::startTrans();
+
+            try {
+                if (!empty($goods)) {
+                    foreach ($goods as $good) {
+                        $comment = [
+                            'user_id' => $userId,
+                            'product_id' => $good['goods_id'],
+                            'order_id' => $submitData['order_id'],
+                            'content' =>  $good['info']['content'],
+                            'type' => $good['info']['level'],
+                            'images' => !empty($good['info']['img_arr']) ? json_encode($good['info']['img_arr']) : ''
+                        ];
+
+                        if (! $commentModel->addComment($comment)) {
+                            Db::rollback();
+                            return $this->_error();
+                        }
+                    }
+                    Db::commit();
+                    return $this->_successful();
+                }
+            } catch (Exception $e) {
+                Db::rollback();
+            }
+        }
+
+        return $this->_error();
+    }
+
     // 订单列表
     public function orderList()
     {
@@ -557,21 +600,62 @@ class App extends BaseController
         $orderInfo = (new Order())->getOrderInfo($userId, $orderId);
 
         // 未支付前 可以取消
-        if ($orderInfo['status'] == 0) {
-            //
+        if ($orderInfo && $orderInfo['status'] == 0) {
+            // 关闭订单
+            Db::startTrans();
+
+            try {
+                if ((new Order())->updateOrder($orderId, ['status' => 90, 'update_time' => time()])) {
+                    if ((new Order())->resetStock($orderId)) {
+                        Db::commit();
+                        return $this->_successful();
+                    }
+                }
+                Db::rollback();
+            } catch (Exception $e) {
+                Db::rollback();
+            }
         }
+
+        return $this->_error();
     }
     
     // 申请退款
     public function applyRefund()
     {
-        
+        // 待发货，待收货可以申请退款
+        $orderId = input('order_id', 0, 'int');
+        $userId = $this->getUserId();
+        $orderInfo = (new Order())->getOrderInfo($userId, $orderId);
+
+        if ($orderInfo && in_array($orderInfo['status'], ['10', '30'])) {
+
+            // 申请退款
+            if ((new Order())->updateOrder($orderId, ['status' => 60, 'update_time' => time()])) {
+                return $this->_successful();
+            }
+        }
+
+        return $this->_error();
     }
 
     // 确认收货
     public function comfirmOrder()
     {
+        $orderId = input('order_id', 0, 'int');
+        $userId = $this->getUserId();
+        $orderInfo = (new Order())->getOrderInfo($userId, $orderId);
 
+        // 待收货
+        if ($orderInfo && $orderInfo['status'] == 30) {
+
+            // 确认收货
+            if ((new Order())->updateOrder($orderId, ['status' => 40, 'update_time' => time()])) {
+                return $this->_successful();
+            }
+        }
+
+        return $this->_error();
     }
 
     // 购物车

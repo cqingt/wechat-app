@@ -17,7 +17,7 @@ class OrderDetail extends Model
     {
         return $this
             ->where(['order_id' => $orderId])
-            ->field(['product_name', 'product_image', 'product_attr', 'product_sku', 'product_price', 'product_num'])
+            ->field(['product_id', 'sku_id', 'product_name', 'product_image', 'product_attr', 'product_sku', 'product_price', 'product_num'])
             ->select()
             ->toArray();
     }

@@ -2,6 +2,8 @@
 namespace app\common\model;
 
 use library\Tool;
+use think\Db;
+use think\Exception;
 use think\Log;
 use think\Model;
 use think\Cache;
@@ -62,5 +64,31 @@ class Order extends Model
         return $this->where(['user_id' => $userId, 'id' => $orderId])
             ->field(['id', 'express_status', 'express', 'express_no', 'express_json'])
             ->find();
+    }
+
+    public function updateOrder($orderId, $data)
+    {
+        return $this->where(['order_id' => $orderId])->update($data);
+    }
+
+    // 取消订单，恢复库存
+    public function resetStock($orderId)
+    {
+        $goods = (new OrderDetail())->getDetail($orderId);
+        $skuModel = new ProductSku();
+        $productModel = new Product();
+        $stock = 0;
+
+        foreach ($goods as $good) {
+            $stock += $good['product_num'];
+            $skuFlag = $skuModel->where(['id' => $good['sku_id']])->inc('stock', $good['product_num']);
+            $productFlag = $productModel->where(['id' => $good['product_id']])->inc('stock', $good['product_num']);
+
+            if ($skuFlag && $productFlag) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
