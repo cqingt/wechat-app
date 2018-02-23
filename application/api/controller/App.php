@@ -379,7 +379,7 @@ class App extends BaseController
                 ]
             ];
 
-            $orderGoods = $orderDetail->getDetail($item['id']);
+            $orderGoods = $orderDetail->getDetail($item['order_id']);
 
             foreach ($orderGoods as $orderGood) {
                 $item['goods_info'][] = [
@@ -508,8 +508,8 @@ class App extends BaseController
             'integral_used' => 0,
             'original_price' => $orderInfo['price'],
             'additional_info' => '',
-            'id' => $orderInfo['id'],
-            'order_id' => $orderInfo['order_sn'],
+            'order_id' => $orderInfo['id'],
+            'order_sn' => $orderInfo['order_sn'],
             'payment_id' => 0,
             'status' => isset($statusFlip[$orderInfo['status']]) ? $statusFlip[$orderInfo['status']] : 9,
             'total_price' => $orderInfo['price'],
