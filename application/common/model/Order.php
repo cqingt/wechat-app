@@ -55,4 +55,12 @@ class Order extends Model
             ->field(['id', 'user_id', 'order_sn', 'remark', 'price', 'trade_no', 'pay_time', 'status', 'express', 'express_no', 'create_time'])
             ->find();
     }
+
+    // 获取快递信息
+    public function getOrderExpress($userId, $orderId)
+    {
+        return $this->where(['user_id' => $userId, 'id' => $orderId])
+            ->field(['id', 'express_status', 'express', 'express_no', 'express_json'])
+            ->find();
+    }
 }

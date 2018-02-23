@@ -18,6 +18,7 @@ use app\common\model\OrderDetail;
 use app\common\model\Product;
 use app\common\model\ProductComment;
 use app\common\model\ProductSku;
+use app\common\model\UserAddress;
 use library\Code;
 use think\Db;
 
@@ -548,6 +549,31 @@ class App extends BaseController
         return $this->_successful($result);
     }
 
+    // 取消订单
+    public function cancelOrder()
+    {
+        $orderId = input('order_id', 0, 'int');
+        $userId = $this->getUserId();
+        $orderInfo = (new Order())->getOrderInfo($userId, $orderId);
+
+        // 未支付前 可以取消
+        if ($orderInfo['status'] == 0) {
+            //
+        }
+    }
+    
+    // 申请退款
+    public function applyRefund()
+    {
+        
+    }
+
+    // 确认收货
+    public function comfirmOrder()
+    {
+
+    }
+
     // 购物车
     public function cartList()
     {
@@ -747,6 +773,25 @@ class App extends BaseController
     // 地址列表
     public function addressList()
     {
+        $addressList = (new UserAddress())->addressList($this->getUserId());
+
+        foreach ($addressList as &$item) {
+            $item = [
+                'id' => $item['id'],
+                'address_info' => [
+                    'name' => $item['username'],
+                    'contact' => $item['telephone'],
+                    'detailAddress' => $item['address'],
+                    'province' => $item['province'],
+                    'city' => $item['city'],
+                    'district' => $item['area']
+                ],
+                'is_default' => $item['is_default'] == 'Y' ? 1 : 0,
+                'telphone' => $item['telephone'],
+                'latitude' => '',
+                'longitude' => '',
+            ];
+        }
         $data = [
             [
                 'id' => 114603,
@@ -779,7 +824,8 @@ class App extends BaseController
                 'longitude' => '96.48063',
             ]
         ];
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+
+        return $this->_successful($addressList);
     }
 
     // 分类
@@ -817,6 +863,18 @@ class App extends BaseController
     // 物流信息
     public function expressFlow()
     {
+        $orderId = input('order_id');
+        $orderInfo = (new Order())->getOrderExpress($this->getUserId(), $orderId);
+        $express = [];
+
+        if (!empty($orderInfo)) {
+            $express = [
+                'state' => $orderInfo['express_status'],
+                'express_name' => $orderInfo['express'],
+                'express_code' => $orderInfo['express_no'],
+                'traces' => ! empty($orderInfo['express_json']) ? json_decode($orderInfo['express_json'], true) : []
+            ];
+        }
         //state  2在途中，3已签收，4问题件
         $data = [
             'state' => (int)rand(2, 4),
@@ -846,7 +904,8 @@ class App extends BaseController
             ]
         ];
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        return $this->_successful($express);
+        //return ['code' => '200', 'msg' => 'success', 'data' => $data];
     }
 
     // 积分规则
@@ -930,6 +989,24 @@ class App extends BaseController
     // 编辑地址
     public function getAddressById()
     {
+        $userId = $this->getUserId();
+        $addressId = input('address_id', 0, 'int');
+        $address = (new UserAddress())->addressInfo($userId, $addressId);
+
+        $addressInfo = [
+            'address_info' => [
+                'name' => $address['username'],
+                'contact' => $address['telephone'],
+                'province' => $address['province'],
+                'city' => $address['city'],
+                'district' => $address['area'],
+                'detailAddress' => $address['address'],
+                'sex' => $address['sex'],
+            ]
+        ];
+
+        return $this->_successful($addressInfo);
+
         $data = [
             'address_info' => [
                 'name' => '张三丰',
@@ -941,7 +1018,48 @@ class App extends BaseController
                 'sex' => 1
             ]
         ];
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        //return ['code' => '200', 'msg' => 'success', 'data' => $data];
+    }
+
+    // 添加地址
+    public function addAddress()
+    {
+        $userId = $this->getUserId();
+        $addressInfo = $_POST['address_info'];
+        $addressId = input('address_id', 0, 'int');
+        $isDefault = 0;
+
+        if (! empty($addressInfo)) {
+            $address = [
+                'user_id' => $userId,
+                'username' => $addressInfo['name'],
+                'telephone' => $addressInfo['contact'],
+                'province' => $addressInfo['province'],
+                'city' => $addressInfo['city'],
+                'area' => $addressInfo['district'],
+                'address' => $addressInfo['detailAddress'],
+                'sex' => $addressInfo['sex'],
+                'is_default' => $isDefault
+            ];
+
+            $addressModel = new UserAddress();
+
+            if ($addressId) {
+                array_push($address, ['update_time' => time() ]);
+
+                if ($addressModel->addAddress($address, $addressId)) {
+                    return $this->_successful();
+                }
+            } else {
+                array_push($address, ['create_time' => time()]);
+
+                if ($addressModel->addAddress($address)) {
+                    return $this->_successful();
+                }
+            }
+        }
+
+        return $this->_error();
     }
 
     // 店铺信息
