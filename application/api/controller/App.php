@@ -12,6 +12,7 @@ use app\common\model\Banner;
 use app\common\model\Cart;
 use app\common\model\Category;
 use app\common\model\Config;
+use app\common\model\MessageLog;
 use app\common\model\Order;
 use app\common\model\OrderAddress;
 use app\common\model\OrderComment;
@@ -755,7 +756,20 @@ class App extends BaseController
     // 消息
     public function getMessage()
     {
-        $type = ['1' => '站内消息', '2' => '支付消息', 3 => '表单消息', 4 => '评论消息', 8 => '管理员通知'];
+        $page = input('page', 1);
+        $offset = ($page - 1) * $this->_rows;
+        $message = new MessageLog();
+        $userId = $this->getUserId();
+        $total = $message->messageCount($userId);
+        $messageList = [];
+
+        if ($total) {
+            $messageList = $message->messageList($userId, $offset, $this->_rows);
+        }
+
+        $totalPage = ceil($total / $this->_rows);
+        $isMore = count($messageList) == $this->_rows ? 1 : 0;
+        // 消息类型：1已支付，2订单状态变更，3退款，4系统通知
         $data = [
             'messageList' => [
                 [
@@ -804,7 +818,7 @@ class App extends BaseController
             'unread_count' => 3
         ];
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
+        $this->_success($messageList, $isMore, $total, $page, $totalPage);
     }
 
     // 购物车与检查
