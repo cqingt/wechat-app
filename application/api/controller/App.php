@@ -818,7 +818,7 @@ class App extends BaseController
             'unread_count' => 3
         ];
 
-        $this->_success($messageList, $isMore, $total, $page, $totalPage);
+        return $this->_success($messageList, $isMore, $total, $page, $totalPage);
     }
 
     // 购物车与检查
