@@ -24,7 +24,7 @@ class MessageLog extends Model
     public function messageList($userId, $offset, $rows)
     {
         return $this->where(['user_id' => $userId])
-            ->field(['content', 'create_time'])
+            ->field(['type', 'content', "FROM_UNIXTIME(create_time,'%Y-%m-%d %H:%i:%s')" => 'add_time'])
             ->order('id desc')
             ->limit($offset, $rows)
             ->select()
