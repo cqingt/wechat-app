@@ -1143,13 +1143,13 @@ class App extends BaseController
             $addressModel = new UserAddress();
 
             if ($addressId) {
-                array_push($address, ['update_time' => time() ]);
+                $address = array_merge($address, ['update_time' => time() ]);
 
                 if ($addressModel->addAddress($address, $addressId)) {
                     return $this->_successful();
                 }
             } else {
-                array_push($address, ['create_time' => time()]);
+                $address = array_merge($address, ['create_time' => time()]);
 
                 if ($addressModel->addAddress($address)) {
                     return $this->_successful();
