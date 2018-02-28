@@ -16,6 +16,7 @@ class Code{
         'API_NOT_FOUND'       => ['code' => '404', 'msg' => '接口未找到'],
         'SERVICE_IS_BUSINESS' => ['code' => '405', 'msg' => '服务忙，请稍后'],
         'OVERFLOW_STOCK'      => ['code' => '406', 'msg' => '库存不足'],
+        'SAVE_USER_ERROR'     => ['code' => '407', 'msg' => '保存用户信息失败'],
     ];
 
     /**

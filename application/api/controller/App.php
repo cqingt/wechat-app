@@ -11,6 +11,8 @@ namespace app\api\controller;
 use app\common\model\Banner;
 use app\common\model\Cart;
 use app\common\model\Category;
+use app\common\model\CompanyAddress;
+use app\common\model\CompanyConfig;
 use app\common\model\Config;
 use app\common\model\MessageLog;
 use app\common\model\Order;
@@ -20,10 +22,13 @@ use app\common\model\OrderDetail;
 use app\common\model\Product;
 use app\common\model\ProductComment;
 use app\common\model\ProductSku;
+use app\common\model\User;
 use app\common\model\UserAddress;
+use app\common\model\UserIntegral;
 use library\Code;
 use think\Db;
 use think\Exception;
+use think\Validate;
 
 class App extends BaseController
 {
@@ -952,10 +957,17 @@ class App extends BaseController
     // 用户首页
     public function countStatusOrder()
     {
+        $order = new Order();
+        $userId = $this->getUserId();
+        $toPay = $order->getTotal($userId, 0);
+        $toSend = $order->getTotal($userId, 10);
+        $toReceive = $order->getTotal($userId, 30);
+        $toComment = $order->getTotal($userId, 40);
         ['待付款', '待发货', '待收货', '待评价'];
-        $data = [2, 0, 1, 0];
+        $data = [$toPay, $toSend, $toReceive, $toComment];
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        return $this->_successful($data);
+        //return ['code' => '200', 'msg' => 'success', 'data' => $data];
     }
 
     // 物流信息
@@ -1009,56 +1021,50 @@ class App extends BaseController
     // 积分规则
     public function getIntegralInfo()
     {
+        $userId = $this->getUserId();
+        //$canUse = (new User())->getUserField($userId, 'integral');
         $data = [
-            'can_use_integral' => 30,
-            'total_integral' => 100,
-            'convert_num' => 100,
+            'can_use_integral' => (new User())->getUserField($userId, 'integral'),
+            'total_integral' => (new UserIntegral())->getTotal($userId, 'GET'),
+            'convert_num' => (new CompanyConfig())->getFieldValue('integral_yuan'),
             'consume_num' => 1,
             'login_num' => 0,
             'post_comment_num' => 0,
             'share_num' => 0,
         ];
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+
+        return $this->_successful($data);
     }
 
     // 积分列表
     public function getIntegralList()
     {
+        $page = input('page', 1);
+        $offset = ($page - 1) * $this->_rows;
         $action = isset($_GET['action']) ? $_GET['action'] : 'income';
 
-        $data = [
-            [
-                'content' => '消费180元，获得80积分',
-                'time' => date('Y-m-d H:i'),
-                'num' => 80
-            ],
-            [
-                'content' => '订单20183823232运费8元，积分抵扣5元',
-                'time' => date('Y-m-d H:i'),
-                'num' => -50
-            ],
-            [
-                'content' => '消费180元，获得80积分',
-                'time' => date('Y-m-d H:i'),
-                'num' => 80
-            ],
-            [
-                'content' => '订单20183823232运费8元，积分抵扣5元',
-                'time' => date('Y-m-d H:i'),
-                'num' => -50
-            ]
-        ];
+        $integral = new UserIntegral();
+        $userId = $this->getUserId();
 
-        if ($action == 'income') {
-            $data = [
-                $data[0], $data[2]
-            ];
-        } else {
-            $data = [
-                $data[1], $data[3]
-            ];
+        $total = $integral->getCount($userId, $action);
+        $result = [];
+
+        if ($total) {
+            $list = $integral->getList($userId, $action, $offset, $this->_rows);
+
+            foreach ($list as $item) {
+                $result[] = [
+                    'content' => $item['remark'],
+                    'time' => date('Y-m-d H:i', $item['create_time']),
+                    'num' => ($action === 'outcome' ? '-' : '') . $item['amount']
+                ];
+            }
         }
-        return ['code' => '200', 'msg' => 'success', 'data' => $data, 'is_more' => 1, 'current_page' => 1, 'count' => 100, 'total_page' => 5];
+
+        $totalPage = ceil($total / $this->_rows);
+        $isMore = count($result) == $this->_rows ? 1 : 0;
+
+        return $this->_success($result, $isMore, $total, $page, $totalPage);
     }
 
     // 预支付
@@ -1163,15 +1169,21 @@ class App extends BaseController
     // 店铺信息
     public function getAppShopLocationInfo()
     {
-        $data = [
-            'is_self_delivery' => 1,
-            'shop_location' => '福建省福州市台江区宝龙城市广场38号楼',
-            'shop_contact' => '15323243242',
-            'open_time' => '08:00',
-            'close_time' => '22:00'
-        ];
+        $shopInfo = (new CompanyAddress())->getCompanyInfo();
 
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+        if ($shopInfo) {
+            $data = [
+                'is_self_delivery' => 0, // 到店自提
+                'shop_location' => $shopInfo['address'],
+                'shop_contact' => $shopInfo['telephone'],
+                'open_time' => $shopInfo['open_time'],
+                'close_time' => $shopInfo['close_time'],
+            ];
+        } else {
+            return $this->_error();
+        }
+
+        return $this->_successful($data);
     }
 
     protected function getUserId()
@@ -1179,13 +1191,58 @@ class App extends BaseController
         return 1;
     }
 
+    // 用户信息
     protected function getUserInfo()
     {
-        return [
-            'nickname' => 'wechat',
-            'mobile'   => '15260983827',
-            'avatar'   => ''
+        $userInfo = (new User())->getUserInfo($this->getUserId());
+
+        return $this->_successful($userInfo);
+    }
+
+    // 保存用户信息
+    public function saveUserInfo()
+    {
+        $nickname = input('nickname');
+        $avatar = input('cover_thumb');
+        $telephone = input('phone');
+        $sex = input('sex');
+
+        $rules = [
+            'username'  => 'require|max:25|min:3',
+            'avatar'    => 'require',
+            'telephone' => 'require|regex:1[3-9]\d{9}'
         ];
+
+        $message  =   [
+            'username.require' => '昵称不能为空',
+            'username.max'     => '昵称最多不能超过25个字符',
+            'username.min'     => '昵称最少3个字符',
+            'avatar.require'   => '头像不能为空',
+            'telephone.require'  => '手机号不能为空',
+            'telephone.regex'    => '手机号错误',
+        ];
+
+        $data = [
+            'username' => $nickname,
+            'avatar' => $avatar,
+            'telephone' => $telephone,
+        ];
+
+        $validate = new Validate($rules, $message);
+        $result   = $validate->check($data);
+        if(! $result){
+            return $this->_error('SAVE_USER_ERROR', $validate->getError());
+        }
+
+        if (! is_null($sex) ) {
+            $data['sex'] = $sex;
+        }
+
+        if ((new User())->saveUserInfo($this->getUserId(), $data)) {
+            return $this->_successful();
+        }
+
+        return $this->_error();
     }
 
     /**
@@ -1231,8 +1288,8 @@ class App extends BaseController
         return $result;
     }
 
-    protected function _error($errorCode = 'UNKNOWN_ERROR')
+    protected function _error($errorCode = 'UNKNOWN_ERROR', $errorMsg = '')
     {
-        return Code::get($errorCode);
+        return Code::get($errorCode, $errorCode);
     }
 }

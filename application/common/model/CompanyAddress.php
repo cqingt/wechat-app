@@ -9,4 +9,10 @@ class CompanyAddress extends Model
     protected $name = 'company_address';
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
+
+    public function getCompanyInfo($id = 1)
+    {
+        return $this->field(['address', 'telephone', 'open_time', 'close_time'])
+            ->find($id);
+    }
 }
