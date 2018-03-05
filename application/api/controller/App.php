@@ -1232,11 +1232,11 @@ class App extends BaseController
     // 店铺信息
     public function getAppShopLocationInfo()
     {
-        $shopInfo = (new CompanyAddress())->getCompanyInfo();
+        $shopInfo = (new CompanyConfig())->getValues();
 
         if ($shopInfo) {
             $data = [
-                'is_self_delivery' => 0, // 到店自提
+                'is_self_delivery' => stripos($shopInfo['delivery'], 'O2O') !== false ? 1 : 0, // 到店自提
                 'shop_location' => $shopInfo['address'],
                 'shop_contact' => $shopInfo['telephone'],
                 'open_time' => $shopInfo['open_time'],
