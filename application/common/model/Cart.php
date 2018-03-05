@@ -45,4 +45,26 @@ class Cart extends Model
         return $this->where(['user_id' => $userId, 'id' => $id])
             ->delete();
     }
+
+    /**
+     * 获取选中商品
+     * @param $userId
+     * @return array
+     */
+    public function getCartSelected($userId)
+    {
+        $result = $this->alias('cart')
+            ->join('product prod', 'cart.product_id = prod.id')
+            ->join('product_sku sku', 'cart.sku_id = sku.id')
+            ->field(
+                ['cart.id', 'cart.num', 'cart.sku_id', 'cart.product_id', 'prod.name' => 'title', 'prod.image' => 'cover',
+                    'prod.attr', 'sku.attr' => 'model_value_str', 'sku.stock', 'sku.price', 'cart.selected']
+            )
+            ->where(['cart.user_id' => $userId, 'cart.selected' => 'Y'])
+            ->order('cart.update_time DESC')
+            ->select()
+            ->toArray();
+
+        return $result;
+    }
 }

@@ -14,4 +14,12 @@ class CompanyConfig extends Model
     {
         return $this->where(['id' => 1])->value($field);
     }
+
+    public function getValues()
+    {
+        return $this->where(['id' => 1])->field(
+            ['username','telephone','address','delivery','express','open_time','close_time','use_integral',
+                'express_fee','express_integral','integral_yuan']
+        )->find();
+    }
 }

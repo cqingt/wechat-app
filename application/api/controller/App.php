@@ -829,7 +829,38 @@ class App extends BaseController
     // 购物车与检查
     public function precheckShoppingCart()
     {
-        return ['code' => '200', 'msg' => 'success', 'data' => []];
+        // 检测库存是否合法
+        $userId = $this->getUserId();
+        $goods = (new Cart())->getCartSelected($userId);
+        $data = [];
+
+        foreach ($goods as $item) {
+            if ($item['num'] > $item['stock']) {
+                $data['expired_goods_arr'][] = ['goods_id' => $item['product_id']];
+            }
+            $data['goodsList'][] = [
+                'cart_id' => $item['id'],
+                'goods_id' => $item['product_id'],
+                'sku_id' => $item['sku_id'],
+                'editSelected' => 1,
+                'selected' => $item['selected'] == 'Y' ? 1 : 0,
+                'num' => $item['num'],
+                'title' => $item['title'],
+                'cover' => $item['cover'],
+                'price' => $item['price'],
+                'original_price' => $item['price'],
+                'stock' => $item['stock'],
+                'sales' => 0,
+                'status' => 0,
+                'model_value' => [$item['model_value_str']]
+            ];
+        }
+
+        if (isset($data['expired_goods_arr'])) {
+            $this->_successful($data, 201);
+        } else {
+            $this->_successful($data);
+        }
     }
 
     // 搜索
@@ -1070,24 +1101,56 @@ class App extends BaseController
     // 预支付
     public function prePay()
     {
+        $addressId = input('address_id');
+        $selfDelivery = input('is_self_delivery');
+        $userId = $this->getUserId();
+        $expressFee = 0;
+        $addressInfo = [];
+
+        if ($selfDelivery == 1) {
+            // 到店自提
+        } else {
+            // 快递
+            $config = (new CompanyConfig())->getValues();
+            if (stripos($config['delivery'], 'EXPRESS') !== false && $config['express'] == 'FEE') {
+                $expressFee = $config['express_fee'];
+            }
+        }
+
+        if ($addressId) {
+            $address = (new UserAddress())->addressInfo($userId, $addressId);
+            if ($address) {
+                $addressInfo = [
+                    'name' => $address['username'],
+                    'contact' => $address['telephone'],
+                    'province' => $address['province'],
+                    'city' => $address['city'],
+                    'area' => $address['area'],
+                    'address' => $address['address'],
+                ];
+            }
+        }
+
+        $userId = $this->getUserId();
+        $goods = (new Cart())->getCartSelected($userId);
+        $price = 0;
+        foreach ($goods as $good) {
+            $price += $good['num'] * $good['price'];
+        }
+
         $data = [
-            'goods_info' => [],
-            'express_fee' => 30,
-            'original_price' => 999,
-            'price' => 999,
+            'goods_info' => $goods,
+            'express_fee' => $expressFee,
+            'original_price' => $price,
+            'price' => $price,
             'address' => [
-                'id' => 114603,
-                'address_info' => [
-                    'name' => '张无忌',
-                    'contact' => 13832432432,
-                    'province' => '福建省',
-                    'city' => '福州市',
-                    'area' => '台江区',
-                    'address' => '宝龙城市广场',
-                ]
+                'id' => $addressId,
+                'address_info' => $addressInfo
             ]
         ];
-        return ['code' => '200', 'msg' => 'success', 'data' => $data];
+
+        $this->_successful($data);
+        //return ['code' => '200', 'msg' => 'success', 'data' => $data];
     }
 
     // 编辑地址
@@ -1248,12 +1311,13 @@ class App extends BaseController
     /**
      * 不带分页
      * @param array $data
+     * @param int $code
      * @return array
      */
-    protected function _successful($data = [])
+    protected function _successful($data = [], $code = 200)
     {
         return [
-            'code' => '200',
+            'code' => $code,
             'msg' => 'success',
             'data' => $data
         ];
