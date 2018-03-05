@@ -857,9 +857,9 @@ class App extends BaseController
         }
 
         if (isset($data['expired_goods_arr'])) {
-            $this->_successful($data, 201);
+            return $this->_successful($data, 201);
         } else {
-            $this->_successful($data);
+            return $this->_successful($data);
         }
     }
 
@@ -1149,7 +1149,7 @@ class App extends BaseController
             ]
         ];
 
-        $this->_successful($data);
+        return $this->_successful($data);
         //return ['code' => '200', 'msg' => 'success', 'data' => $data];
     }
 
