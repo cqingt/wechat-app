@@ -1253,8 +1253,6 @@ class App extends BaseController
 
     public function loginUser()
     {
-        echo session('a9cfcf1ba44088e7e0e9ed330bc77e39');
-        return true;
         $nickname = input('nickname');
         $gender = input('gender');
         $province = input('province');
@@ -1268,8 +1266,8 @@ class App extends BaseController
         }
 
         $sessionValue = session($session);
-        Log::record('session1:' . var_export($session, true));
-        Log::record('session1 value:' . var_export(Session::get($session), true));
+        //Log::record('session1:' . var_export($session, true));
+        //Log::record('session1 value:' . var_export(Session::get($session), true));
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
             $openId = explode($sessionValue, '|')[1];
             $user = new User();
@@ -1304,9 +1302,6 @@ class App extends BaseController
 
     public function onLogin()
     {
-        session('a9cfcf1ba44088e7e0e9ed330bc77e39', 'zK8yfH9WPptt0vXXEn3JCA==|osk0G0UKWM4HcNtTqqv70NzcQyfM');
-        echo session('a9cfcf1ba44088e7e0e9ed330bc77e39');
-        return true;
         $appId = \think\Config::get('weixin.appId');
         $secret = \think\Config::get('weixin.appSecret');
         $code = input('code');
@@ -1324,8 +1319,8 @@ class App extends BaseController
                 $session = $this->generateSession($sessionKey, $openId);
                 $value = $this->generateSession($sessionKey, $openId, true);
                 session($session, $value);
-                Log::record('session:' . var_export($session, true));
-                Log::record('session value:' . var_export(Session::get($session), true));
+                //Log::record('session:' . var_export($session, true));
+                //Log::record('session value:' . var_export(Session::get($session), true));
                 $data = ['session' => $session, 'is_login' => 0];
                 return $this->_successful($data);
             }
