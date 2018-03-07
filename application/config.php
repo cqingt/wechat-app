@@ -201,6 +201,7 @@ return [
         'type'           => '',
         // 是否自动开启 SESSION
         'auto_start'     => true,
+        'use_trans_sid'  => 1,
         'expire'         => 3600 * 24 * 30 // 一个月过期
     ],
 

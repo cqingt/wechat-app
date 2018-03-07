@@ -1269,7 +1269,7 @@ class App extends BaseController
         //Log::record('session1:' . var_export($session, true));
         //Log::record('session1 value:' . var_export(Session::get($session), true));
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
-            $openId = explode($sessionValue, '|')[1];
+            $openId = explode('|', $sessionValue)[1];
             $user = new User();
             $userId = $this->getUserId();
             $userInfo = [
