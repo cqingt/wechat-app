@@ -1267,7 +1267,7 @@ class App extends BaseController
 
         $sessionValue = session($session);
         Log::record('session1:' . var_export($session, true));
-        Log::record('session1 value:' . var_export(session($session), true));
+        Log::record('session1 value:' . var_export(Session::get($session), true));
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
             $openId = explode($sessionValue, '|')[1];
             $user = new User();
@@ -1320,7 +1320,7 @@ class App extends BaseController
                 $value = $this->generateSession($sessionKey, $openId, true);
                 session($session, $value);
                 Log::record('session:' . var_export($session, true));
-                Log::record('session value:' . var_export(session($session), true));
+                Log::record('session value:' . var_export(Session::get($session), true));
                 $data = ['session' => $session, 'is_login' => 0];
                 return $this->_successful($data);
             }
