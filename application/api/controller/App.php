@@ -1265,9 +1265,7 @@ class App extends BaseController
             return $this->_error('PARAM_NOT_EMPTY');
         }
 
-        $sessionValue = Session::get($session);
-        //Log::record('session1:' . var_export($session, true));
-        //Log::record('session1 value:' . var_export(Session::get($session), true));
+        $sessionValue = Session::get('session_key.' . $session);
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
             $openId = explode('|', $sessionValue)[1];
             $user = new User();
@@ -1318,9 +1316,8 @@ class App extends BaseController
                 // 存储openid, 生成新的3rd_session ，接口调用凭证使用3rd_session 过期重新登录
                 $session = $this->generateSession($sessionKey, $openId);
                 $value = $this->generateSession($sessionKey, $openId, true);
-                session($session, $value);
-                //Log::record('session:' . var_export($session, true));
-                //Log::record('session value:' . var_export(Session::get($session), true));
+                Session::set('session_key.' . $session, $value);
+
                 $data = ['session' => $session, 'is_login' => 0];
                 return $this->_successful($data);
             }
