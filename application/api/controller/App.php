@@ -28,6 +28,7 @@ use app\common\model\UserIntegral;
 use library\Code;
 use think\Db;
 use think\Exception;
+use think\Session;
 use think\Validate;
 
 class App extends BaseController
@@ -1315,8 +1316,7 @@ class App extends BaseController
                 // 存储openid, 生成新的3rd_session ，接口调用凭证使用3rd_session 过期重新登录
                 $session = $this->generateSession($sessionKey, $openId);
                 $value = $this->generateSession($sessionKey, $openId, true);
-                $expire = \think\Config::get('weixin.expire');
-                session($session, $value, time() + $expire); // 一个月
+                session($session, $value);
 
                 $data = ['session' => $session, 'is_login' => 0];
                 return $this->_successful($data);
