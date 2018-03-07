@@ -1253,6 +1253,8 @@ class App extends BaseController
 
     public function loginUser()
     {
+        echo session('a9cfcf1ba44088e7e0e9ed330bc77e39');
+        return true;
         $nickname = input('nickname');
         $gender = input('gender');
         $province = input('province');
@@ -1302,6 +1304,9 @@ class App extends BaseController
 
     public function onLogin()
     {
+        session('a9cfcf1ba44088e7e0e9ed330bc77e39', 'zK8yfH9WPptt0vXXEn3JCA==|osk0G0UKWM4HcNtTqqv70NzcQyfM');
+        echo session('a9cfcf1ba44088e7e0e9ed330bc77e39');
+        return true;
         $appId = \think\Config::get('weixin.appId');
         $secret = \think\Config::get('weixin.appSecret');
         $code = input('code');
