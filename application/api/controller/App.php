@@ -1265,7 +1265,7 @@ class App extends BaseController
             return $this->_error('PARAM_NOT_EMPTY');
         }
 
-        $sessionValue = session($session);
+        $sessionValue = Session::get($session);
         //Log::record('session1:' . var_export($session, true));
         //Log::record('session1 value:' . var_export(Session::get($session), true));
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
