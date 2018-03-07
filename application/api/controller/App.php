@@ -1251,7 +1251,50 @@ class App extends BaseController
 
     public function loginUser()
     {
-        
+        $nickname = input('nickname');
+        $gender = input('gender');
+        $province = input('province');
+        $city = input('city');
+        $country = input('country');
+        $avatarUrl = input('avatarUrl');
+        $session = input('session_key');
+
+        if (empty($nickname)) {
+            return $this->_error('PARAM_NOT_EMPTY');
+        }
+
+        $sessionValue = session($session);
+
+        if (! empty($sessionValue) && stripos($sessionValue, '|')) {
+            $openId = explode($sessionValue, '|')[1];
+            $user = new User();
+            $userId = $this->getUserId();
+            $userInfo = [
+                'username' => $nickname,
+                'province' => $province,
+                'city'     => $city,
+                'avatar'   => $avatarUrl,
+                'gender'   => $gender,
+                'country'  => $country
+            ];
+
+            if (! $user->existUsername($openId)) {
+                $user->saveUserInfo($userId, $userInfo);
+            }
+
+            $data = [
+                'user_info' => [
+                    'nickname'    => $nickname,
+                    'cover_thumb' => $avatarUrl,
+                    'gender'      => $gender,
+                    'phone'       => ''
+                ]
+            ];
+
+            return $this->_successful($data);
+        } else {
+            return $this->_error('USER_NOT_LOGIN');
+        }
     }
 
     public function onLogin()
@@ -1261,7 +1304,55 @@ class App extends BaseController
         $code = input('code');
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$appId.'&secret='.$secret.'&js_code='.$code.'&grant_type=authorization_code';
         $result = $this->http_get($url);
-        print_r($result);exit;
+
+        if (! empty($result)) {
+            $sessionKey = $result['session_key'];
+            $openId = $result['openid'];
+
+            $user = new User();
+
+            if ((! $user->existOpenId($openId) && $user->addUser($openId)) || $user->existOpenId($openId)) {
+                // 存储openid, 生成新的3rd_session ，接口调用凭证使用3rd_session 过期重新登录
+                $session = $this->generateSession($sessionKey, $openId);
+                $value = $this->generateSession($sessionKey, $openId, true);
+                $expire = \think\Config::get('weixin.weixin');
+                session($session, $value, time() + $expire); // 一个月
+
+                $data = ['session' => $session, 'is_login' => 0];
+                return $this->_successful($data);
+            }
+            return $this->_error('USER_REGISTER_ERROR');
+        }
+    }
+
+    // 生成session
+    public function generateSession($sessionKey, $openId, $getValue = false)
+    {
+        $value = $sessionKey . '|' . $openId;
+
+        if ($getValue) {
+            return $value;
+        }
+        return md5($value);
+    }
+
+    // 获取用户信息
+    public function getLoginUserInfo()
+    {
+        $userInfo = (new User)->getUserInfo2($this->getUserId());
+
+        if (empty($userInfo)) {
+            return $this->_error('USER_NOT_LOGIN');
+        }
+
+        $data = [
+            'nickname'    => $userInfo['username'],
+            'cover_thumb' => $userInfo['avatar'],
+            'gender'      => $userInfo['gender'],
+            'phone'       => $userInfo['telephone'],
+        ];
+
+        return $this->_successful($data);
     }
 
     protected function http_get($url, $header = [], $response = 'json') {
@@ -1303,6 +1394,14 @@ class App extends BaseController
 
     protected function getUserId()
     {
+        $session = input('session_key');
+        $sessionValue = session($session);
+
+        if ($session && stripos($sessionValue, '|')) {
+            $openId = explode($sessionValue, '|')[1];
+            return (new User())->getUserId($openId);
+        }
+
         return 1;
     }
 

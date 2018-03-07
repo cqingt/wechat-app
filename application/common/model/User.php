@@ -29,4 +29,34 @@ class User extends Model
     {
         return $this->where(['id' => $userId])->value($field);
     }
+
+    public function existOpenId($openId)
+    {
+        return $this->where(['openid' => $openId])->count();
+    }
+
+    public function existUsername($openId)
+    {
+        return $this->where(['openid' => $openId])->value('username');
+    }
+
+    public function addUser($openId)
+    {
+        $this->insert(['openid' => $openId, 'create_time' => time()]);
+
+        return $this->getError() ? false : true;
+    }
+
+    public function getUserInfo2($userId)
+    {
+        return $this->where(['id' => $userId])
+            ->field(['username', 'telephone', 'gender', 'avatar'])
+            ->limit(1)
+            ->find();
+    }
+
+    public function getUserId($openId)
+    {
+        return $this->where(['openid' => $openId])->value('id');
+    }
 }
