@@ -229,4 +229,9 @@ return [
         'var_page'  => 'p',
         'list_rows' => 20,
     ],
+
+    'weixin' => [
+        'appId' => 'wx31c29e4d7c15086a',
+        'appSecret' => '5fafeb1162405ee7ff235e5a0e9a92c3',
+    ],
 ];

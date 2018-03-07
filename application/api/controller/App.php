@@ -1249,6 +1249,58 @@ class App extends BaseController
         return $this->_successful($data);
     }
 
+    public function loginUser()
+    {
+        
+    }
+
+    public function onLogin()
+    {
+        $appId = \think\Config::get('weixin.appId');
+        $secret = \think\Config::get('weixin.appSecret');
+        $code = input('code');
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$appId.'&secret='.$secret.'&js_code='.$code.'&grant_type=authorization_code';
+        $result = $this->http_get($url);
+        print_r($result);exit;
+    }
+
+    protected function http_get($url, $header = [], $response = 'json') {
+        if(function_exists('curl_init')) {
+            $urlArr = parse_url($url);
+            $ch = curl_init();
+
+            if(is_array($header) && !empty($header)){
+                $setHeader = array();
+                foreach ($header as $k=>$v){
+                    $setHeader[] = "$k:$v";
+                }
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $setHeader);
+            }
+
+            curl_setopt($ch,CURLOPT_URL, $url);
+            curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+            curl_setopt($ch,CURLOPT_HEADER,0);
+
+            if (strnatcasecmp($urlArr['scheme'], 'https') == 0) {
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // 对认证证书来源的检查
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // 从证书中检查SSL加密算法是否存在
+            }
+
+            //执行并获取HTML文档内容
+            $output = curl_exec($ch);
+            $info = curl_getinfo($ch);
+            curl_close($ch);
+
+            if (is_array($info) && $info['http_code'] == 200) {
+                return $response == 'json' ? json_decode($output, true, JSON_UNESCAPED_UNICODE) : $output;
+            } else {
+                exit('请求失败（code）：' . $info['http_code']);
+            }
+        } else {
+            throw new Exception('请开启CURL扩展');
+        }
+    }
+
     protected function getUserId()
     {
         return 1;
