@@ -17,6 +17,8 @@ class Code{
         'SERVICE_IS_BUSINESS' => ['code' => '405', 'msg' => '服务忙，请稍后'],
         'OVERFLOW_STOCK'      => ['code' => '406', 'msg' => '库存不足'],
         'SAVE_USER_ERROR'     => ['code' => '407', 'msg' => '保存用户信息失败'],
+        'USER_NOT_LOGIN'      => ['code' => '408', 'msg' => '您还未登录'],
+        'USER_REGISTER_ERROR' => ['code' => '409', 'msg' => '用户注册失败'],
     ];
 
     /**

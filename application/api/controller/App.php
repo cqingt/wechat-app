@@ -1315,7 +1315,7 @@ class App extends BaseController
                 // 存储openid, 生成新的3rd_session ，接口调用凭证使用3rd_session 过期重新登录
                 $session = $this->generateSession($sessionKey, $openId);
                 $value = $this->generateSession($sessionKey, $openId, true);
-                $expire = \think\Config::get('weixin.weixin');
+                $expire = \think\Config::get('weixin.expire');
                 session($session, $value, time() + $expire); // 一个月
 
                 $data = ['session' => $session, 'is_login' => 0];
