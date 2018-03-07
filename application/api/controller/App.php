@@ -1266,7 +1266,8 @@ class App extends BaseController
         }
 
         $sessionValue = session($session);
-        Log::record('session value:' . var_export(session($session), true));
+        Log::record('session1:' . var_export($session, true));
+        Log::record('session1 value:' . var_export(session($session), true));
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
             $openId = explode($sessionValue, '|')[1];
             $user = new User();
@@ -1317,9 +1318,9 @@ class App extends BaseController
                 // 存储openid, 生成新的3rd_session ，接口调用凭证使用3rd_session 过期重新登录
                 $session = $this->generateSession($sessionKey, $openId);
                 $value = $this->generateSession($sessionKey, $openId, true);
-                $res = session($session, $value);
-                Log::record('session result:' . var_export($res, true));
-                Log::record('session:' . var_export(session($session), true));
+                session($session, $value);
+                Log::record('session:' . var_export($session, true));
+                Log::record('session value:' . var_export(session($session), true));
                 $data = ['session' => $session, 'is_login' => 0];
                 return $this->_successful($data);
             }
