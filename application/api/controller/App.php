@@ -1453,7 +1453,7 @@ class App extends BaseController
         }
 
         if (! is_null($sex) ) {
-            $data['sex'] = $sex;
+            $data['gender'] = $sex == 1 ? '男' : ($sex == 0 ? '女' : '未知');
         }
 
         if ((new User())->saveUserInfo($this->getUserId(), $data)) {
