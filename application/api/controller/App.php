@@ -1277,8 +1277,9 @@ class App extends BaseController
                 'province' => $province,
                 'city'     => $city,
                 'avatar'   => $avatarUrl,
-                'gender'   => $gender,
-                'country'  => $country
+                'gender'   => $gender == 1 ? '男' : ($gender == 0 ? '女' : '未知'),
+                'country'  => $country,
+                'update_time' => time()
             ];
 
             if (! $user->existUsername($openId)) {
