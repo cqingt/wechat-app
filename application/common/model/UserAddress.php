@@ -36,4 +36,10 @@ class UserAddress extends Model
             return $this->insert($data);
         }
     }
+
+    public function delAddress($userId, $addressId)
+    {
+        $this->where(['user_id' => $userId, 'id' => $addressId])->delete();
+        return $this->getError() ? false : true;
+    }
 }

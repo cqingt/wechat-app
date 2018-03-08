@@ -1199,6 +1199,10 @@ class App extends BaseController
         $addressId = input('address_id', 0, 'int');
         $isDefault = 0;
 
+        if (empty($addressInfo)) {
+            return $this->_error('PARAM_NOT_EMPTY');
+        }
+
         if (! empty($addressInfo)) {
             $address = [
                 'user_id' => $userId,
@@ -1227,6 +1231,23 @@ class App extends BaseController
                     return $this->_successful();
                 }
             }
+        }
+
+        return $this->_error();
+    }
+
+    // 删除地址
+    public function delAddress()
+    {
+        $userId = $this->getUserId();
+        $addressId = input('address_id', 0, 'int');
+
+        if (empty($addressId)) {
+            return $this->_error('PARAM_NOT_EMPTY');
+        }
+
+        if ((new UserAddress())->delAddress($userId, $addressId)) {
+            return $this->_successful();
         }
 
         return $this->_error();
