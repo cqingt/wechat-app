@@ -1321,8 +1321,9 @@ class App extends BaseController
                 $value = $this->generateSession($sessionKey, $openId, true);
                 Session::set('session_key.' . $session, $value);
                 //Cache::set($session, $value, \think\Config::get('weixin.expire'));
+                $register = $user->existUsername($openId);
 
-                $data = ['session' => $session, 'is_login' => 0];
+                $data = ['session' => $session, 'is_login' => $register ? 1 : 0, 'session_id' => session_id()];
                 return $this->_successful($data);
             }
             return $this->_error('USER_REGISTER_ERROR');
