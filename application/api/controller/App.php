@@ -722,8 +722,8 @@ class App extends BaseController
 
         $stock = (new ProductSku())->getStock($productId, $skuId);
         if ($stock && $num >= 1 && $num <= $stock) {
-            if ((new Cart())->updateNum($this->getUserId(), $productId, $skuId, $num)) {
-                return ['code' => '200', 'msg' => 'success', 'data' => []];
+            if ((new Cart())->addCart($this->getUserId(), $productId, $skuId, $num)) {
+                return $this->_successful();
             }
         }
 

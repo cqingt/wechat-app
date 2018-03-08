@@ -39,6 +39,26 @@ class Cart extends Model
             ->update(['num' => $num]);
     }
 
+    public function addCart($userId, $productId, $skuId, $num)
+    {
+        if ($this->where(['user_id' => $userId, 'product_id' => $productId, 'sku_id' => $skuId])->count()) {
+            // 存在更新
+            $this->where(['user_id' => $userId, 'product_id' => $productId, 'sku_id' => $skuId])
+                ->update(['num' => $num]);
+        } else {
+            // 不存在 新增
+            $this->insert(
+                [
+                    'user_id' => $userId,
+                    'product_id' => $productId,
+                    'sku_id' => $skuId,
+                    'num' => $num
+                ]
+            );
+        }
+        return $this->getError() ? false : true;
+    }
+
     // 删除
     public function deleteById($userId, $id)
     {
