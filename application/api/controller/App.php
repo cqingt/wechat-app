@@ -26,6 +26,7 @@ use app\common\model\User;
 use app\common\model\UserAddress;
 use app\common\model\UserIntegral;
 use library\Code;
+use think\Cache;
 use think\Db;
 use think\Exception;
 use think\Log;
@@ -1265,7 +1266,8 @@ class App extends BaseController
             return $this->_error('PARAM_NOT_EMPTY');
         }
 
-        $sessionValue = Session::get('session_key.' . $session);
+        $sessionValue = Cache::get($session);
+        //$sessionValue = Session::get('session_key.' . $session);
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
             $openId = explode('|', $sessionValue)[1];
             $user = new User();
@@ -1306,7 +1308,7 @@ class App extends BaseController
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$appId.'&secret='.$secret.'&js_code='.$code.'&grant_type=authorization_code';
         $result = $this->http_get($url);
 
-        if (! empty($result)) {
+        if (! empty($result) && isset( $result['session_key'])) {
             $sessionKey = $result['session_key'];
             $openId = $result['openid'];
 
@@ -1316,7 +1318,8 @@ class App extends BaseController
                 // 存储openid, 生成新的3rd_session ，接口调用凭证使用3rd_session 过期重新登录
                 $session = $this->generateSession($sessionKey, $openId);
                 $value = $this->generateSession($sessionKey, $openId, true);
-                Session::set('session_key.' . $session, $value);
+                //Session::set('session_key.' . $session, $value);
+                Cache::set($session, $value, \think\Config::get('weixin.expire'));
 
                 $data = ['session' => $session, 'is_login' => 0];
                 return $this->_successful($data);
