@@ -1398,10 +1398,10 @@ class App extends BaseController
     protected function getUserId()
     {
         $session = input('session_key');
-        $sessionValue = session($session);
+        $sessionValue = Cache::get($session);
 
         if ($session && stripos($sessionValue, '|')) {
-            $openId = explode($sessionValue, '|')[1];
+            $openId = explode('|',$sessionValue)[1];
             return (new User())->getUserId($openId);
         }
 
