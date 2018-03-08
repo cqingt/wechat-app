@@ -1266,8 +1266,8 @@ class App extends BaseController
             return $this->_error('PARAM_NOT_EMPTY');
         }
 
-        $sessionValue = Cache::get($session);
-        //$sessionValue = Session::get('session_key.' . $session);
+        //$sessionValue = Cache::get($session);
+        $sessionValue = Session::get('session_key.' . $session);
         if (! empty($sessionValue) && stripos($sessionValue, '|')) {
             $openId = explode('|', $sessionValue)[1];
             $user = new User();
@@ -1319,8 +1319,8 @@ class App extends BaseController
                 // 存储openid, 生成新的3rd_session ，接口调用凭证使用3rd_session 过期重新登录
                 $session = $this->generateSession($sessionKey, $openId);
                 $value = $this->generateSession($sessionKey, $openId, true);
-                //Session::set('session_key.' . $session, $value);
-                Cache::set($session, $value, \think\Config::get('weixin.expire'));
+                Session::set('session_key.' . $session, $value);
+                //Cache::set($session, $value, \think\Config::get('weixin.expire'));
 
                 $data = ['session' => $session, 'is_login' => 0];
                 return $this->_successful($data);
