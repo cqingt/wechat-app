@@ -1404,9 +1404,15 @@ class App extends BaseController
         if ($session && stripos($sessionValue, '|')) {
             $openId = explode('|',$sessionValue)[1];
             return (new User())->getUserId($openId);
+        } else {
+            echo json_encode(
+                [
+                    'code' => 408,
+                    'msg' => '请先登录账号',
+                    'data' => []
+                ]
+            ); exit;
         }
-
-        return 1;
     }
 
     // 用户信息
