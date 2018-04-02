@@ -93,4 +93,123 @@ class Tool
 
         return $key;
     }
+
+    /**
+     * 快递信息数组
+     * @param $expressNo string 快递单号
+     * @param $expressCode string 快递拼音标识
+     * @return array
+     * @throws \Exception
+     */
+    public static function queryExpress($expressNo, $expressCode)
+    {
+        $key   = '580ca50702293d9c03cfb7ef3d9961ce72752d78';
+        $appId = '100142';
+        $url   = 'https://kop.kuaidihelp.com/api';
+
+        $data = [
+            'app_id' => $appId,
+            'method' => 'express.info.get',
+            'ts'     => time(),
+        ];
+
+        ksort($data);
+        $valueStr = implode('', array_values($data));
+        $data['sign'] = md5($valueStr . $key); // md5(app_id + method + ts + api_key))
+
+        $data['data'] = json_encode([
+            'waybill_no'       => $expressNo,
+            'exp_company_code' => $expressCode,
+        ]);
+
+        $response = http_post($url, $data);
+        $results = [];
+
+        if (! empty($response)) {
+            $dataArr = json_decode($response, true, JSON_UNESCAPED_UNICODE);
+
+            if (! json_last_error()) {
+                if ($dataArr['code']) { // 非0 错误
+                    //throw new \Exception($dataArr['msg']);
+                } else {
+                    $expressData = $dataArr['data'][0];
+                    $results['status'] = $expressData['status']; // signed 已签收
+                    $results['no']     = $expressData['no'];
+                    $results['brand']  = $expressData['brand'];
+                    $results['data']   = [];
+
+                    $express = $expressData['data'];
+
+                    foreach ($express as $item) {
+                        $results['data'][] = [
+                            'time'    => $item['time'],
+                            'context' => $item['context']
+                        ];
+                    }
+
+                    $results['data'] = array_reverse($results['data']);
+                }
+            } else {
+                //throw new \Exception('json 字符串解析错误');
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param $url
+     * @param array $data
+     * @param int $retry
+     * @param array $header
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function http_post($url, $data = [], $retry = 3, $header = ['Content-Type:application/x-www-form-urlencoded;charset=utf-8']){
+
+        if(function_exists('curl_init')) {
+            $urlArr = parse_url($url);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+
+            if(is_array($header) && !empty($header)){
+                $setHeader = array();
+                foreach ($header as $k=>$v){
+                    $setHeader[] = "$k:$v";
+                }
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $setHeader);
+            }
+
+            if (strnatcasecmp($urlArr['scheme'], 'https') == 0) {
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // 对认证证书来源的检查
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // 从证书中检查SSL加密算法是否存在
+            }
+
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+            $output = curl_exec($ch);
+
+            if(curl_errno($ch)){
+                return curl_error($ch);
+            }
+
+            $info = curl_getinfo($ch);
+            curl_close($ch);
+
+            if (is_array($info) && $info['http_code'] == 200) {
+                return $output;
+            } else {
+                if ($retry) {
+                    return  self::http_post($url, $data, $retry - 1);
+                }
+                exit('请求失败（code）：' . $info['http_code']);
+            }
+        } else {
+            throw new \Exception('请开启CURL扩展');
+        }
+    }
+
 }

@@ -4,10 +4,12 @@ namespace app\admin\controller;
 \think\Loader::import('controller/Controller', \think\Config::get('traits_path') , EXT);
 
 use app\admin\Controller;
+use app\common\model\Express;
 use app\common\model\Order as ModelOrder;
 use app\common\model\OrderAddress as ModelOrderAddress;
 use app\common\model\OrderDetail as ModelOrderDetail;
 use library\Constants;
+use library\Tool;
 use think\exception\HttpException;
 use think\Hook;
 
@@ -95,7 +97,7 @@ class Order extends Controller
                 [
                     'orders.id','orders.order_sn','orders.price','orders.status','orders.express','orders.express_no',
                     'orders.pay_time','address.username','address.telephone','address.province','address.city',
-                    'address.area','address.address','orders.express_json'
+                    'address.area','address.address','orders.express_json', 'orders.express_id'
                 ]
             )
             ->where(['orders.id' => $id])
@@ -109,7 +111,17 @@ class Order extends Controller
             throw new HttpException(404, '该记录不存在');
         }
 
-        if (!empty($vo['express_json'])) {
+        if (empty($vo['express_json']) && $vo['express_no']) {
+            $expressCode = (new Express())->getExpressCode($vo['express_id']);
+            $result = Tool::queryExpress($vo['express_no'], $expressCode);
+
+            if (! empty($result) && is_array($result)) {
+                $this->getModel($controller)->where(['orders.id' => $id])->update(['express_json' => json_encode($result)]);
+                $expressData = $result['data'];
+            }
+        }
+
+        if (! empty($vo['express_json'])) {
             $express = json_decode($vo['express_json'], true);
             if (!empty($express['data'])) {
                 $expressData = $express['data'];
