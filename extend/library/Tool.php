@@ -7,8 +7,43 @@
  */
 namespace library;
 
+use app\common\model\Express;
+use app\common\model\Order;
+
 class Tool
 {
+    public static $expressSigned = 5; //快递已签收状态
+    public static $express = [
+        1 => '无信息',
+        2 => '已揽收',
+        3 => '运送中',
+        4 => '派送中',
+        5 => '已签收',
+        6 => '问题件',
+        'unknown'    => 1,
+        'collected'  => 2,
+        'sending'    => 3,
+        'delivering' => 4,
+        'signed'     => 5,
+        'question'   => 6,
+    ];
+    // 快递状态 1无物流信息，2已揽收，3运送中，4派送中，5已签收，6问题件
+    // 'signed'已签收,'delivering'派送中,'sending'运送中,'collected'已揽收,question 问题件
+
+    /**
+     * 获取物流信息
+     * @param $status
+     * @return mixed|string
+     */
+    public static function getState($status)
+    {
+        if (!empty(self::$express[$status])) {
+            return self::$express[$status];
+        }
+
+        return '无物流信息';
+    }
+
     /**
      * 根据日期，获取对应的时间戳
      * @return array
@@ -95,6 +130,31 @@ class Tool
     }
 
     /**
+     * 快递信息更新
+     * @param $orderId
+     * @param $expressId
+     * @param $expressNo
+     * @return array|mixed
+     */
+    public static function getExpress($orderId, $expressId, $expressNo)
+    {
+        $expressCode = (new Express())->getExpressCode($expressId);
+        $result = Tool::queryExpress($expressNo, $expressCode);
+        $expressData = [];
+
+        if (! empty($result) && is_array($result)) {
+            $status = isset(self::$express[$result['status']]) ? self::$express[$result['status']] : 1;
+
+            (new Order())
+                ->where(['id' => $orderId])
+                ->update(['express_json' => json_encode($result), 'express_status' => $status]);
+            $expressData = ['data' => $result['data'], 'status' => $status];
+        }
+
+        return $expressData;
+    }
+
+    /**
      * 快递信息数组
      * @param $expressNo string 快递单号
      * @param $expressCode string 快递拼音标识
@@ -122,7 +182,7 @@ class Tool
             'exp_company_code' => $expressCode,
         ]);
 
-        $response = http_post($url, $data);
+        $response = self::http_post($url, $data);
         $results = [];
 
         if (! empty($response)) {

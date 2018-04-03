@@ -62,7 +62,7 @@ class Order extends Model
     public function getOrderExpress($userId, $orderId)
     {
         return $this->where(['user_id' => $userId, 'id' => $orderId])
-            ->field(['id', 'express_status', 'express', 'express_no', 'express_json'])
+            ->field(['id', 'express_status', 'express_id', 'express', 'express_no', 'express_json'])
             ->find();
     }
 

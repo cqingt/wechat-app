@@ -23,6 +23,7 @@ use app\common\model\Product;
 use app\common\model\ProductComment;
 use app\common\model\ProductSku;
 use app\common\model\User;
+use app\common\model\Express;
 use app\common\model\UserAddress;
 use app\common\model\UserIntegral;
 use library\Code;
@@ -32,6 +33,7 @@ use think\Exception;
 use think\Log;
 use think\Session;
 use think\Validate;
+use library\Tool;
 
 class App extends BaseController
 {
@@ -1012,11 +1014,23 @@ class App extends BaseController
         $express = [];
 
         if (!empty($orderInfo)) {
+
+            // 非签收的订单 都要重新查询信息
+            if ($orderInfo['express_no'] && $orderInfo['express_status'] != Tool::$expressSigned) {
+                $result = Tool::getExpress($orderId, $orderInfo['express_id'], $orderInfo['express_no']);
+                $traces = isset($result['data']) ? $result['data'] : [];
+                $status = isset($result['status']) ? $result['status'] : 1;
+
+            } else {
+                $traces = json_decode($orderInfo['express_json'], true, JSON_UNESCAPED_UNICODE);
+                $status = $orderInfo['express_status'];
+            }
+
             $express = [
-                'state' => $orderInfo['express_status'],
+                'state' => $status,
                 'express_name' => $orderInfo['express'],
                 'express_code' => $orderInfo['express_no'],
-                'traces' => ! empty($orderInfo['express_json']) ? json_decode($orderInfo['express_json'], true) : []
+                'traces' => $traces
             ];
         }
         //state  2在途中，3已签收，4问题件

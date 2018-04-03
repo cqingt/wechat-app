@@ -4,7 +4,6 @@ namespace app\admin\controller;
 \think\Loader::import('controller/Controller', \think\Config::get('traits_path') , EXT);
 
 use app\admin\Controller;
-use app\common\model\Express;
 use app\common\model\Order as ModelOrder;
 use app\common\model\OrderAddress as ModelOrderAddress;
 use app\common\model\OrderDetail as ModelOrderDetail;
@@ -97,7 +96,7 @@ class Order extends Controller
                 [
                     'orders.id','orders.order_sn','orders.price','orders.status','orders.express','orders.express_no',
                     'orders.pay_time','address.username','address.telephone','address.province','address.city',
-                    'address.area','address.address','orders.express_json', 'orders.express_id'
+                    'address.area','address.address','orders.express_json', 'orders.express_id', 'orders.express_status'
                 ]
             )
             ->where(['orders.id' => $id])
@@ -111,26 +110,28 @@ class Order extends Controller
             throw new HttpException(404, '该记录不存在');
         }
 
-        if (empty($vo['express_json']) && $vo['express_no']) {
-            $expressCode = (new Express())->getExpressCode($vo['express_id']);
-            $result = Tool::queryExpress($vo['express_no'], $expressCode);
+        $status = $vo['express_status'];
 
-            if (! empty($result) && is_array($result)) {
-                $this->getModel($controller)->where(['orders.id' => $id])->update(['express_json' => json_encode($result)]);
-                $expressData = $result['data'];
-            }
-        }
+        // 非签收的订单
+        if ($vo['express_no'] && $vo['express_status'] != Tool::$expressSigned) {
 
-        if (! empty($vo['express_json'])) {
-            $express = json_decode($vo['express_json'], true);
+            $result = Tool::getExpress($id, $vo['express_id'], $vo['express_no']);
+            $expressData = isset($result['data']) ? $result['data'] : [];
+            $status = isset($result['status']) ? $result['status'] : 1;
+
+        } else if (! empty($vo['express_json'])) {
+
+            $express = json_decode($vo['express_json'], true, JSON_UNESCAPED_UNICODE);
             if (!empty($express['data'])) {
                 $expressData = $express['data'];
             }
+
         }
 
         $this->view->assign("vo", $vo);
         $this->view->assign("goods", $goods);
         $this->view->assign("express", isset($expressData) ? $expressData : []);
+        $this->view->assign("state", Tool::getState($status));
 
         return $this->view->fetch('edit');
     }
@@ -143,15 +144,27 @@ class Order extends Controller
             throw new HttpException(404, "缺少参数ID");
         }
 
-        $expressJson = $this->getModel($controller)
+        $orderInfo = $this->getModel($controller)
             ->where(['id' => $id])
-            ->value('express_json');
+            ->field(['express_id', 'express_no', 'express_json', 'express_status'])
+            ->find();
         $expressData = [];
+        $status = 1;
 
-        if (!empty($expressJson)) {
-            $express = json_decode($expressJson, true);
-            if (!empty($express['data'])) {
-                $expressData = $express['data'];
+        if (! empty($orderInfo)) {
+            if ($orderInfo['express_no'] && $orderInfo['express_status'] != Tool::$expressSigned) {
+                $result = Tool::getExpress($id, $orderInfo['express_id'], $orderInfo['express_no']);
+                $expressData = isset($result['data']) ? $result['data'] : [];
+                $status = isset($result['status']) ? $result['status'] : 1;
+
+            } else if (! empty($orderInfo['express_json'])) {
+
+                $express = json_decode($orderInfo['express_json'], true, JSON_UNESCAPED_UNICODE);
+                $status = $orderInfo['status'];
+
+                if (! empty($express['data'])) {
+                    $expressData = $express['data'];
+                }
             }
         }
 
@@ -159,6 +172,7 @@ class Order extends Controller
         Hook::exec('\\app\\admin\behavior\Order', 'run', $params);
 
         $this->view->assign("express", $expressData);
+        $this->view->assign("state", Tool::getState($status));
 
         return $this->view->fetch();
     }
