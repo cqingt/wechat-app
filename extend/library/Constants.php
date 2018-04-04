@@ -9,7 +9,7 @@ namespace library;
 
 class Constants {
     const PAY_STATUS_UNPAID = 0;
-    const PAY_STATUS_PAID = 10;
+    const PAY_STATUS_SUCCESS = 10;
 
     public static $orderStatus = [
         0  => '待支付',

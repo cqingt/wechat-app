@@ -27,7 +27,7 @@ class Business extends BaseController
             $result = $callback->queryOrder('', $orderInfo['order_sn']);
 
             if ($result) {
-                return ['status' => Constant::PAY_STATUS_PAID];
+                return ['status' => Constant::PAY_STATUS_SUCCESS];
             }
         }
 
