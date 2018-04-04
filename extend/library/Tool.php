@@ -225,12 +225,14 @@ class Tool
      * @return mixed
      * @throws \Exception
      */
-    public static function http_post($url, $data = [], $retry = 3, $header = ['Content-Type:application/x-www-form-urlencoded;charset=utf-8']){
+    public static function http_post($url, $data = [], $retry = 3, $header = []){
 
         if(function_exists('curl_init')) {
             $urlArr = parse_url($url);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
+
+            empty($header) && $header = ['Content-Type:application/x-www-form-urlencoded;charset=utf-8'];
 
             if(is_array($header) && !empty($header)){
                 $setHeader = array();
@@ -269,6 +271,48 @@ class Tool
             }
         } else {
             throw new \Exception('请开启CURL扩展');
+        }
+    }
+
+    /**
+     * @param $url
+     * @param array $data
+     * @param int $retry
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function http_get($url, $data = [], $retry = 3){
+
+        if(function_exists('curl_init')) {
+            $urlArr = parse_url($url);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+
+            if (strnatcasecmp($urlArr['scheme'], 'https') == 0) {
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // 对认证证书来源的检查
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // 从证书中检查SSL加密算法是否存在
+            }
+
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+            $output = curl_exec($ch);
+
+            if(curl_errno($ch)){
+                return curl_error($ch);
+            }
+
+            $info = curl_getinfo($ch);
+            curl_close($ch);
+
+            if (is_array($info) && $info['http_code'] == 200) {
+                return $output;
+            } else {
+                if ($retry) {
+                    return  self::http_get($url, $data, $retry - 1);
+                }
+                exit('请求失败（code）：' . $info['http_code']);
+            }
         }
     }
 

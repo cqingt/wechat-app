@@ -1506,6 +1506,17 @@ class App extends BaseController
         return $this->_error();
     }
 
+    // 预支付
+    public function addCartOrder()
+    {
+        $cart = $_POST['cart_arr'];
+        $formId = input('formId');
+        $is_self_delivery = input('is_self_delivery');
+        $address_id = input('address_id');
+        $remark = input('remark');
+
+    }
+
     /**
      * 不带分页
      * @param array $data
